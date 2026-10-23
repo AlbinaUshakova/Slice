@@ -116,6 +116,7 @@ export default function Planner({startView='today'}:{startView?:'home'|'today'})
    if(saved){const data:unknown=JSON.parse(saved);if(!validCourses(data))throw new Error('invalid');setCourses(data);const last=localStorage.getItem(ACTIVE_KEY);const requested=new URLSearchParams(window.location.search).get('course');setActive(planCourseId(data,requested,last));if(requested&&data.some(c=>c.id===requested))setView('today');}
   }catch{setStorageError('Не удалось прочитать сохранение. Старые данные не перезаписаны.')}
   if(new URLSearchParams(window.location.search).get('add')==='1')setShowImport(true);
+  if(new URLSearchParams(window.location.search).get('backup')==='1')setShowBackup(true);
   window.history.replaceState(null,'',window.location.pathname);
   setReady(true);
  },[]);

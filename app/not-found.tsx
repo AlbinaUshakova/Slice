@@ -1,1 +1,1 @@
-export default function NotFound(){return <main className="error-page"><h1>Здесь пока ничего нет</h1><p>Твои подборки ждут на главной.</p><a className="button primary" href="/">К подборкам</a></main>}
+export default function NotFound(){return <main className="error-page"><h1>Здесь пока ничего нет</h1><p>Твои подборки ждут в приложении.</p><a className="button primary" href="/app">К подборкам</a></main>}

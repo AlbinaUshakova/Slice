@@ -1,5 +1,6 @@
 import BrandLogo from '../components/BrandLogo';
-export const metadata={title:'Логотип — Day by Day',robots:{index:false,follow:false}};
+import {BRAND_NAME} from '@/lib/brand';
+export const metadata={title:`Логотип — ${BRAND_NAME}`,robots:{index:false,follow:false}};
 export default function BrandPreview(){return <main className="brand-preview">
  <a className="brand-preview-back" href="/">← Главная</a>
  <h1>Один знак. Две темы.</h1>

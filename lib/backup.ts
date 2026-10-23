@@ -1,9 +1,10 @@
 import {validCourses,type Course} from './course.ts';
+import {BRAND_NAME} from './brand.ts';
 export const MAX_BACKUP_BYTES=10*1024*1024;
 export function parseBackup(text:string):Course[]{
  if(new Blob([text]).size>MAX_BACKUP_BYTES)throw new Error('Файл слишком большой. Максимум — 10 МБ.');
- let value:unknown;try{value=JSON.parse(text)}catch{throw new Error('Не удалось прочитать файл. Выбери копию Day by Day в формате JSON.')}
- if(!validCourses(value))throw new Error('В файле нет корректной копии Day by Day.');
+ let value:unknown;try{value=JSON.parse(text)}catch{throw new Error(`Не удалось прочитать файл. Выбери копию ${BRAND_NAME} в формате JSON.`)}
+ if(!validCourses(value))throw new Error(`В файле нет корректной копии ${BRAND_NAME}.`);
  return value;
 }
 // Current records always win: restoring an older copy cannot erase recent work.

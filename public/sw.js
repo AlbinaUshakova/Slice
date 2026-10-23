@@ -1,7 +1,7 @@
 /* Day by Day: only the public app shell and static assets are cached, never imports or recordings. */
 const CACHE='day-by-day-__BUILD_ID__';
 const PRECACHE=/* PRECACHE */[];
-const PAGES=new Set(['/','/plan','/about']);
+const PAGES=new Set(['/','/app','/plan','/about']);
 async function shell(path){
  const response=await fetch(path,{cache:'reload',redirect:'manual',headers:{Accept:'text/html'}});
  if(!response.ok||response.redirected||!response.headers.get('content-type')?.includes('text/html'))return null;

@@ -1,10 +1,11 @@
 import {donationUrl} from '@/lib/support';
+import {BRAND_NAME} from '@/lib/brand';
 export const dynamic='force-dynamic';
-export const metadata={title:'О проекте — Day by Day',description:'Как устроен Day by Day, где хранятся данные и как установить приложение.'};
+export const metadata={title:`О проекте — ${BRAND_NAME}`,description:`Как устроен ${BRAND_NAME}, где хранятся данные и как установить приложение.`};
 export default function About(){const support=donationUrl(process.env.DONATION_URL);return <main className="about-page">
  <a href="/" className="about-back">← Главная</a>
  <img src="/brand/step-flag-app.svg" alt="" width="64" height="64"/>
- <h1>Day by Day</h1>
+ <h1>{BRAND_NAME}</h1>
  <p className="about-intro">Твои ссылки. Один материал в день.</p>
  <section><h2>Как начать</h2><p>Добавь ссылку на курс, плейлист или подборку статей. Проверь список и сохрани план. Каждый день открывай следующий материал, отмечай «Готово» и оставляй заметки.</p><p>Если сайт не отдаёт список, вставь ссылки на уроки с новой строки — каждая станет отдельным днём.</p></section>
  <section><h2>На телефоне</h2><p>Нажми «Установить» внизу плана. Приложение появится на главном экране.</p><p>После первого открытия планы и заметки доступны офлайн. Для новых ссылок, статей и видео нужен интернет.</p></section>
@@ -15,5 +16,5 @@ export default function About(){const support=donationUrl(process.env.DONATION_U
   <p>Полные тексты и видео не сохраняются. Материалы открываются на исходных сайтах, где действуют их правила. Доступность импорта может меняться.</p>
   <p>В приложении нет рекламных и аналитических трекеров. Хостинг может обрабатывать технические данные запросов.</p>
  </details>
- {support&&<section><h2>Поддержать проект</h2><p><a href={support} target="_blank" rel="noopener noreferrer">Оставить донат →</a></p><p>Все функции бесплатны. Донат добровольный, оплата проходит на внешнем сайте. Day by Day не получает данные банковских карт.</p></section>}
+ {support&&<section><h2>Поддержать проект</h2><p><a href={support} target="_blank" rel="noopener noreferrer">Оставить донат →</a></p><p>Все функции бесплатны. Донат добровольный, оплата проходит на внешнем сайте. {BRAND_NAME} не получает данные банковских карт.</p></section>}
 </main>}
