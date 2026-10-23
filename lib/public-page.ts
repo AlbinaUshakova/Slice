@@ -1,13 +1,13 @@
 /** Only public HTTP pages may be fetched. No user cookies or credentials are forwarded. */
 export class UnsafePage extends Error {}
 export function publicUrl(value:string):URL {
- let url:URL;try{url=new URL(value)}catch{throw new UnsafePage('Вставь полную ссылку: https://…');}
+ let url:URL;try{url=new URL(value)}catch{throw new UnsafePage('Paste a full link: https://…');}
  const host=url.hostname.toLowerCase().replace(/\.$/,'');
  if(!/^https?:$/.test(url.protocol)||url.username||url.password||url.port||value.length>2000||
   !host.includes('.')||/^[\d.]+$/.test(host)||host.includes(':')||
   /(?:^|\.)(?:localhost|local|internal|lan|home|test|invalid|example|onion)$/.test(host)||
   /(?:^|\.)(?:metadata\.google\.internal|localhost\.localdomain)$/.test(host))
-  throw new UnsafePage('Нужна публичная ссылка без пароля и нестандартного порта.');
+  throw new UnsafePage('A public link without a password or custom port is required.');
  url.hostname=host;return url;
 }
 export function isPublicAddress(value:string):boolean {
@@ -34,7 +34,7 @@ export async function assertPublicDns(url:URL,fetcher:typeof fetch,signal:AbortS
  if(responses.some(r=>r.Status!==0))throw new Error('DNS unavailable');
  const addresses=responses.flatMap(r=>(r.Answer??[]).filter(a=>a.type===1||a.type===28));
  if(!addresses.length)throw new Error('DNS unavailable');
- if(addresses.some(a=>!isPublicAddress(a.data)))throw new UnsafePage('Этот адрес недоступен для публичного импорта.');
+ if(addresses.some(a=>!isPublicAddress(a.data)))throw new UnsafePage('This address is unavailable for public import.');
 }
 export async function readPublicPage(value:string,fetcher:typeof fetch=fetch):Promise<{html:string;url:URL}> {
  let url=publicUrl(value);url.hash='';

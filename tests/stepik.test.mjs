@@ -25,7 +25,7 @@ test('Stepik importer preserves section and unit order and confirms the complete
  assert.equal(course.id,'https://stepik.org/course/42');assert.equal(course.lessons.length,3);
  assert.deepEqual(course.lessons.map(item=>item.title),['Introductions','Small talk','Meetings']);
  assert.deepEqual(course.lessons.map(item=>item.group),['Start','Start','Practice']);
- assert.match(course.importNotice,/Полная структура подтверждена/);assert.ok(validCourses([course]));
+ assert.match(course.importNotice,/Full structure confirmed/);assert.ok(validCourses([course]));
  const saved=structuredClone(course);saved.lessons[0].note='Keep';
  assert.equal(mergeCourse(saved,course).lessons[0].note,'Keep');
 });
@@ -33,5 +33,5 @@ test('Stepik importer preserves section and unit order and confirms the complete
 test('Stepik importer refuses partial structures instead of saving a shorter course',async()=>{
  await assert.rejects(()=>fetchCourse(input,{fetcher:async url=>{
   const data=payload(new URL(url));if('lessons' in data)data.lessons=data.lessons.slice(0,2);return Response.json(data);
- }}),/только часть курса/);
+ }}),/only part of the course/);
 });

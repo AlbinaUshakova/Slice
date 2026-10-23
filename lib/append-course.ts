@@ -9,6 +9,6 @@ export function newLessons(existing:Course,incoming:Lesson[]):Lesson[]{
 }
 export function appendCourse(existing:Course,incoming:Lesson[]):Course{
  const added=newLessons(existing,incoming);
- if(existing.lessons.length+added.length>2000)throw new Error('В одной подборке — до 2000 материалов.');
+ if(existing.lessons.length+added.length>2000)throw new Error('A collection can contain up to 2,000 items.');
  return {...existing,lessons:[...existing.lessons,...added]};
 }

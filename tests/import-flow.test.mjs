@@ -9,7 +9,7 @@ test('B1 remains importable when the source refuses deployed server requests',as
  assert.equal(c.lessons.length,5);assert.ok(validCourses([c]));
  assert.equal(c.lessons[0].title,'Agreeing and disagreeing');
  assert.equal(c.lessons[4].url,root+'/b1/responding-news');
- assert.match(c.importNotice,/13\.10\.2026/);
+ assert.match(c.importNotice,/13 Oct 2026/);
 });
 test('Speaking expands all four levels to twenty actual lessons in CEFR order',async()=>{
  const c=await fetchCourse(root,{fetcher:denied});

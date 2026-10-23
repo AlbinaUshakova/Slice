@@ -1,7 +1,7 @@
 import {nextLesson,localDay,type Course} from './course.ts';
 export function filterCourses(courses:Course[],query:string):Course[]{
- const needle=query.trim().toLocaleLowerCase('ru');
- return needle?courses.filter(c=>(c.title+' '+c.source).toLocaleLowerCase('ru').includes(needle)):courses;
+ const needle=query.trim().toLocaleLowerCase('en');
+ return needle?courses.filter(c=>(c.title+' '+c.source).toLocaleLowerCase('en').includes(needle)):courses;
 }
 export function resumeCourse(courses:Course[],active:string):Course|undefined {
  return courses.find(c=>c.id===active&&nextLesson(c))??courses.find(c=>nextLesson(c));

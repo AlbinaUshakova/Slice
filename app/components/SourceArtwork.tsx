@@ -27,7 +27,7 @@ export default function SourceArtwork({lessonUrl,sourceUrl,source,compact=false}
  const spotify=host==='open.spotify.com';
  const image=videoId?`https://img.youtube.com/vi/${videoId}/hqdefault.jpg`:spotify?`/api/artwork?url=${encodeURIComponent(sourceUrl)}`:favicon(sourceUrl||lessonUrl);
  const [failedImage,setFailedImage]=useState<string|null>(null),failed=!image||failedImage===image;
- return <div className={'source-artwork '+(videoId?'source-artwork-video ':'source-artwork-logo ')+(compact?'source-artwork-compact':'')} role="img" aria-label={`Источник урока: ${source||host||'сайт'}`}>
+ return <div className={'source-artwork '+(videoId?'source-artwork-video ':'source-artwork-logo ')+(compact?'source-artwork-compact':'')} role="img" aria-label={`Lesson source: ${source||host||'website'}`}>
   {!failed?<img key={image} src={image} alt="" loading="lazy" referrerPolicy="no-referrer" onError={()=>setFailedImage(image)}/>:<BookOpen size={compact?34:46} aria-hidden="true"/>}
  </div>;
 }

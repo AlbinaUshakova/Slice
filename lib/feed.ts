@@ -45,8 +45,8 @@ export function parseFeed(xml:string,source:URL,options:{sourceName?:string;noti
   lessons.push({id:link.href,url:link.href,title:lessonTitle.slice(0,200),completedAt:null,note:''});
   if(lessons.length>=2000)break;
  }
- if(!title||!lessons.length)throw new Error('В RSS/Atom-ленте не найдены материалы.');
- const notice=options.notice??`Загружено из открытой RSS/Atom-ленты: ${lessons.length} материалов. Это все элементы, которые сейчас предоставляет лента; старые публикации могли быть исключены владельцем.`;
+ if(!title||!lessons.length)throw new Error('No items were found in the RSS/Atom feed.');
+ const notice=options.notice??`Loaded from a public RSS/Atom feed: ${lessons.length} items. These are all the entries currently provided by the feed; older posts may have been removed by the publisher.`;
  return {id:source.href,title:title.slice(0,120),source:options.sourceName??'RSS / Atom',sourceUrl:source.href,lessons,importNotice:notice};
 }
 
@@ -57,23 +57,23 @@ async function readFeed(value:string,fetcher:typeof fetch):Promise<{xml:string;u
    await assertPublicDns(url,fetcher,controller.signal);
    const response=await fetcher(url,{redirect:'manual',signal:controller.signal,headers:{Accept:'application/rss+xml, application/atom+xml, application/xml;q=0.9, text/xml;q=0.8','User-Agent':'DayByDay/1.0 (public feed organizer)'}});
    if(response.status>=300&&response.status<400){
-    const location=response.headers.get('location');await response.body?.cancel();if(!location)throw new Error('RSS-лента вернула пустое перенаправление.');
+    const location=response.headers.get('location');await response.body?.cancel();if(!location)throw new Error('The RSS feed returned an empty redirect.');
     url=publicUrl(new URL(location,url).href);url.hash='';continue;
    }
-   if(!response.ok)throw new Error('Не удалось открыть RSS/Atom-ленту.');
-   const reader=response.body?.getReader();if(!reader)throw new Error('RSS/Atom-лента оказалась пустой.');
+   if(!response.ok)throw new Error('Couldn’t open the RSS/Atom feed.');
+   const reader=response.body?.getReader();if(!reader)throw new Error('The RSS/Atom feed is empty.');
    const decoder=new TextDecoder();let xml='',bytes=0;
    while(true){const part=await reader.read();if(part.done)break;bytes+=part.value.length;
-    if(bytes>MAX_FEED_BYTES){await reader.cancel();throw new Error('RSS/Atom-лента слишком большая.');}
+    if(bytes>MAX_FEED_BYTES){await reader.cancel();throw new Error('The RSS/Atom feed is too large.');}
     xml+=decoder.decode(part.value,{stream:true});
    }
    xml+=decoder.decode();
-   if(!/<(?:rss|feed)\b/i.test(xml.slice(0,4000)))throw new Error('Источник вернул не RSS/Atom-ленту.');
+   if(!/<(?:rss|feed)\b/i.test(xml.slice(0,4000)))throw new Error('The source did not return an RSS/Atom feed.');
    return {xml,url};
   }
-  throw new Error('Слишком много перенаправлений RSS/Atom-ленты.');
+  throw new Error('Too many RSS/Atom feed redirects.');
  }catch(error){
-  if(error instanceof Error&&error.name==='AbortError')throw new Error('RSS/Atom-лента отвечает слишком долго.');
+  if(error instanceof Error&&error.name==='AbortError')throw new Error('The RSS/Atom feed is taking too long to respond.');
   throw error;
  }finally{clearTimeout(timer)}
 }

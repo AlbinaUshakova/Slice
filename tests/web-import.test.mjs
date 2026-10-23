@@ -29,7 +29,7 @@ test('Naked Science tag page is a list even when og:type says article; exclude e
  <h3><a href='/article/astronomy/two'>Научная статья <span class='index_importance_news'>4.3</span></a></h3>
  </div><h3><a href='/article/outside'>За пределами раздела</a></h3>`,new URL('https://naked-science.ru/tags/kosmos'));
  assert.deepEqual(course.lessons.map(l=>l.title),['Новость о космосе','Научная статья']);
- assert.match(course.importNotice,/следующие страницы/);
+ assert.match(course.importNotice,/later pages/);
 });
 test('Aferin-style outline preserves topic order and levels without invented lesson links',()=>{
  const course=parseWebPage(`<main><h1>Program</h1><h2>A1 · Başlangıç</h2><ul>
@@ -44,17 +44,17 @@ test('Aferin-style outline preserves topic order and levels without invented les
  const reimport=mergeCourse(saved,{...course,lessons:[...course.lessons].reverse()});
  assert.equal(reimport.lessons[2].note,'First only');assert.equal(reimport.lessons[1].note,'Second only');
  assert.equal(reimport.lessons[0].note,'');assert.equal(reimport.lessons[1].completedAt,null);
- assert.match(course.importNotice,/общая страница/);
+ assert.match(course.importNotice,/shared page/);
 });
 test('Single articles stay single and unknown or JS-only pages have an honest one-page fallback',async()=>{
  const one=parseWebPage(`<meta property='og:type' content='article'><h1>Actual article</h1><h2><a href='/story/other'>Other</a></h2>`,new URL('https://reading.org/story/one'));
  assert.equal(one.lessons.length,1);assert.equal(one.lessons[0].url,'https://reading.org/story/one');
  const blocked=await fetchWebCourse(source.href,withDns(()=>new Response('Forbidden',{status:403})));
- assert.equal(blocked.lessons.length,1);assert.match(blocked.importNotice,/Не удалось/);
+ assert.equal(blocked.lessons.length,1);assert.match(blocked.importNotice,/Couldn’t/);
  const js=await fetchWebCourse(source.href,withDns(()=>page('<div id="app"></div>')));
- assert.match(js.importNotice,/Список материалов не найден/);
+ assert.match(js.importNotice,/No item list was found/);
  const redirect=await fetchWebCourse(source.href,withDns(url=>new URL(url).pathname==='/login'?page('<h1>Sign in</h1>'):new Response(null,{status:302,headers:{location:'/login'}})));
- assert.equal(redirect.lessons[0].url,source.href);assert.match(redirect.importNotice,/требует входа/);
+ assert.equal(redirect.lessons[0].url,source.href);assert.match(redirect.importNotice,/requires signing in/);
 });
 test('Pasted links form one item per line, keep Telegram message fragments, titles, and remove duplicates',()=>{
  const {lessons,discover}=parseLinkInput('  https://web.telegram.org/a/#-1001277008397_pinned\nСтатья | https://reading.org/a\r\nhttps://reading.org/a\nhttps://t.me/c/1277008397/123');
@@ -72,7 +72,7 @@ test('Telegram web/pinned links and single YouTube videos do not fetch private c
 });
 test('Known dynamic collections fail clearly instead of pretending the first page is complete',async()=>{
  for(const url of ['https://www.youtube.com/@english/videos','https://www.coursera.org/learn/english','https://podcasts.apple.com/us/podcast/show/id123456789','https://drive.google.com/drive/folders/abc']){
-  await assert.rejects(()=>fetchCourse(url,{fetcher:()=>{throw new Error('Must not request')}}),/плейлист|динамически|RSS|Google Drive/);
+  await assert.rejects(()=>fetchCourse(url,{fetcher:()=>{throw new Error('Must not request')}}),/playlist|dynamically|RSS|Google Drive/);
  }
 });
 test('Append keeps course identity, start date, progress and notes; repeats are skipped and dates continue',()=>{
@@ -85,7 +85,7 @@ test('Append keeps course identity, start date, progress and notes; repeats are 
  assert.equal(plannedDay(result.planStart,1),'2026-10-14');assert.ok(validCourses([JSON.parse(JSON.stringify(result))]));
  assert.equal(newLessons(result,more).length,0);
  const full={...original,lessons:Array.from({length:2000},(_,i)=>({...original.lessons[0],id:String(i),url:'https://reading.org/'+i}))};
- assert.throws(()=>appendCourse(full,more),/2000/);
+ assert.throws(()=>appendCourse(full,more),/2,000/);
 });
 test('Public URL validation rejects local hosts, numeric IP variants, credentials and unusual ports',()=>{
  for(const value of ['file:///etc/passwd','http://localhost/a','http://sub.localhost/a','http://10.0.0.1','http://2130706433','http://0x7f000001','http://[::1]','https://x:pass@reading.org','https://reading.org:8443','http://metadata.google.internal'])assert.throws(()=>publicUrl(value));
@@ -94,12 +94,12 @@ test('Public URL validation rejects local hosts, numeric IP variants, credential
 });
 test('DNS and every redirect are checked before fetching; credentials are never forwarded',async()=>{
  let pageCalls=0;
- await assert.rejects(readPublicPage(source.href,async url=>{if(new URL(url).hostname==='cloudflare-dns.com')return dns('127.0.0.1');pageCalls++;return page('bad')}),/публичного импорта/);
+ await assert.rejects(readPublicPage(source.href,async url=>{if(new URL(url).hostname==='cloudflare-dns.com')return dns('127.0.0.1');pageCalls++;return page('bad')}),/public import/);
  assert.equal(pageCalls,0);
  await assert.rejects(readPublicPage(source.href,withDns((_url,options)=>{
   pageCalls++;assert.equal(options.redirect,'manual');assert.equal(options.headers.Cookie,undefined);assert.equal(options.headers.Authorization,undefined);
   return new Response(null,{status:302,headers:{location:'http://169.254.169.254/latest'}});
- })),/публичная ссылка/);assert.equal(pageCalls,1);
+ })),/public link/);assert.equal(pageCalls,1);
  const ok=await readPublicPage(source.href,withDns(()=>page('<h1>OK</h1>')));assert.match(ok.html,/OK/);
  await assert.rejects(readPublicPage(source.href,withDns(()=>page('x'.repeat(2_000_001)))),/large/);
 });

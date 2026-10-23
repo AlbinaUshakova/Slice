@@ -6,10 +6,10 @@ type Json=Record<string,unknown>;
 export function isStepik(value:string):boolean{try{return new URL(value).hostname.toLowerCase()===HOST}catch{return false}}
 
 export function stepikCourseUrl(value:string):{url:URL;id:number}{
- let input:URL;try{input=new URL(value)}catch{throw new Error('Вставь ссылку на курс Stepik.')}
+ let input:URL;try{input=new URL(value)}catch{throw new Error('Paste a link to a Stepik course.')}
  const match=/^\/(?:course\/(?:[^/]*-)?|a\/)?(\d+)(?:\/|$)/.exec(input.pathname);
  if(input.protocol!=='https:'||input.hostname.toLowerCase()!==HOST||input.port||input.username||input.password||!match)
-  throw new Error('Нужна открытая ссылка на курс Stepik, а не на отдельный урок.');
+  throw new Error('A public Stepik course link is required, not a link to an individual lesson.');
  const id=Number(match[1]);return {id,url:new URL(`https://${HOST}/course/${id}`)};
 }
 
@@ -20,16 +20,16 @@ async function readJson(url:URL,fetcher:typeof fetch,signal:AbortSignal):Promise
  for(let redirects=0;redirects<4;redirects++){
   const response=await fetcher(current,{redirect:'manual',signal,headers:{Accept:'application/json','User-Agent':'DayByDay/1.0 (public course organizer)'}});
   if(response.status>=300&&response.status<400){
-   const location=response.headers.get('location');await response.body?.cancel();if(!location)throw new Error('Stepik вернул пустое перенаправление.');
-   const target=new URL(location,current);if(target.protocol!=='https:'||target.hostname!==HOST||target.port||target.username||target.password)throw new Error('Stepik перенаправил запрос на неподдерживаемый адрес.');
+   const location=response.headers.get('location');await response.body?.cancel();if(!location)throw new Error('Stepik returned an empty redirect.');
+   const target=new URL(location,current);if(target.protocol!=='https:'||target.hostname!==HOST||target.port||target.username||target.password)throw new Error('Stepik redirected to an unsupported address.');
    current=target;continue;
   }
-  if(!response.ok)throw new Error('Stepik временно не отдал структуру курса. Попробуй позже.');
-  if(!/application\/json/i.test(response.headers.get('content-type')??''))throw new Error('Stepik вернул страницу вместо структуры курса.');
-  const raw=await response.text();if(raw.length>4_000_000)throw new Error('Структура курса Stepik слишком большая.');
+  if(!response.ok)throw new Error('Stepik temporarily failed to provide the course structure. Try again later.');
+  if(!/application\/json/i.test(response.headers.get('content-type')??''))throw new Error('Stepik returned a page instead of the course structure.');
+  const raw=await response.text();if(raw.length>4_000_000)throw new Error('The Stepik course structure is too large.');
   return JSON.parse(raw) as Json;
  }
- throw new Error('Слишком много перенаправлений Stepik.');
+ throw new Error('Too many Stepik redirects.');
 }
 
 async function objects(kind:string,ids:number[],fetcher:typeof fetch,signal:AbortSignal):Promise<Json[]>{
@@ -38,9 +38,9 @@ async function objects(kind:string,ids:number[],fetcher:typeof fetch,signal:Abor
   const batch=ids.slice(start,start+50);let page=1;
   while(true){
    const url=apiUrl(kind);for(const id of batch)url.searchParams.append('ids[]',String(id));url.searchParams.set('page',String(page));
-   const json=await readJson(url,fetcher,signal),items=json[kind];if(!Array.isArray(items))throw new Error('Stepik вернул неполную структуру курса.');
+   const json=await readJson(url,fetcher,signal),items=json[kind];if(!Array.isArray(items))throw new Error('Stepik returned an incomplete course structure.');
    result.push(...items.filter((item):item is Json=>!!item&&typeof item==='object'));
-   const meta=json.meta as Json|undefined;if(meta?.has_next!==true)break;if(++page>20)throw new Error('В структуре Stepik слишком много страниц.');
+   const meta=json.meta as Json|undefined;if(meta?.has_next!==true)break;if(++page>20)throw new Error('The Stepik structure has too many pages.');
   }
  }
  return result;
@@ -53,19 +53,19 @@ export async function fetchStepik(value:string,fetcher:typeof fetch=fetch):Promi
  const source=stepikCourseUrl(value);const controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),20000);
  try{
   const root=await readJson(apiUrl(`courses/${source.id}`),fetcher,controller.signal),course=Array.isArray(root.courses)?root.courses[0] as Json|undefined:undefined;
-  if(!course||typeof course.title!=='string')throw new Error('Курс Stepik не найден или закрыт.');
-  const sectionIds=numbers(course.sections);if(!sectionIds.length)throw new Error('В курсе Stepik пока нет открытых разделов.');
+  if(!course||typeof course.title!=='string')throw new Error('The Stepik course was not found or is private.');
+  const sectionIds=numbers(course.sections);if(!sectionIds.length)throw new Error('This Stepik course has no public sections yet.');
   const sections=await objects('sections',sectionIds,fetcher,controller.signal),sectionById=new Map(sections.map(item=>[number(item.id),item]));
   const orderedSections=sectionIds.map(id=>sectionById.get(id)).filter((item):item is Json=>!!item);
-  if(orderedSections.length!==sectionIds.length)throw new Error('Stepik вернул не все разделы курса.');
-  const unitIds=orderedSections.flatMap(section=>numbers(section.units));if(!unitIds.length)throw new Error('В курсе Stepik пока нет открытых уроков.');
-  if(unitIds.length>2000)throw new Error('В одной подборке — до 2000 уроков. Раздели курс.');
+  if(orderedSections.length!==sectionIds.length)throw new Error('Stepik did not return all course sections.');
+  const unitIds=orderedSections.flatMap(section=>numbers(section.units));if(!unitIds.length)throw new Error('This Stepik course has no public lessons yet.');
+  if(unitIds.length>2000)throw new Error('A collection can contain up to 2,000 lessons. Split the course.');
   const units=await objects('units',unitIds,fetcher,controller.signal),unitById=new Map(units.map(item=>[number(item.id),item]));
   const lessonIds=[...new Set(unitIds.map(id=>number(unitById.get(id)?.lesson)).filter((id):id is number=>!!id))];
   const lessonsData=await objects('lessons',lessonIds,fetcher,controller.signal),lessonById=new Map(lessonsData.map(item=>[number(item.id),item]));
   const lessons:Lesson[]=[];
   for(const section of orderedSections){
-   const group=typeof section.title==='string'?section.title.slice(0,120):'Раздел';
+   const group=typeof section.title==='string'?section.title.slice(0,120):'Section';
    for(const unitId of numbers(section.units)){
     const lessonId=number(unitById.get(unitId)?.lesson),lesson=lessonId?lessonById.get(lessonId):undefined,title=lesson?.title;
     if(!lessonId||typeof title!=='string'||!title.trim())continue;
@@ -73,11 +73,11 @@ export async function fetchStepik(value:string,fetcher:typeof fetch=fetch):Promi
     lessons.push({id:`${source.url.href}#unit=${unitId}`,url,title:title.trim().slice(0,200),completedAt:null,note:'',group});
    }
   }
-  if(lessons.length!==unitIds.length)throw new Error(`Stepik вернул только часть курса: ${lessons.length} из ${unitIds.length} уроков.`);
+  if(lessons.length!==unitIds.length)throw new Error(`Stepik returned only part of the course: ${lessons.length} of ${unitIds.length} lessons.`);
   return {id:source.url.href,title:course.title.slice(0,120),source:'Stepik',sourceUrl:source.url.href,lessons,
-   importNotice:`Полная структура подтверждена API Stepik: ${lessons.length} уроков · ${orderedSections.length} разделов. Закрытые материалы могут потребовать входа на Stepik.`};
+   importNotice:`Full structure confirmed by the Stepik API: ${lessons.length} lessons · ${orderedSections.length} sections. Private items may require signing in to Stepik.`};
  }catch(error){
-  if(error instanceof Error&&error.name==='AbortError')throw new Error('Stepik отвечает слишком долго. Попробуй позже.');
+  if(error instanceof Error&&error.name==='AbortError')throw new Error('Stepik is taking too long to respond. Try again later.');
   throw error;
  }finally{clearTimeout(timeout)}
 }

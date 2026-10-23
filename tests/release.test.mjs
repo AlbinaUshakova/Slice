@@ -23,7 +23,7 @@ test('Restore checks combined capacity before committing',()=>{
  const full=Array.from({length:30},(_,i)=>({...course,id:String(i)}));
  assert.throws(()=>mergeBackup(full,[course]),/30/);
  const many={...course,lessons:Array.from({length:2000},(_,i)=>lesson(String(i)))};
- assert.throws(()=>mergeBackup([many],[{...course,lessons:[lesson('extra')]}]),/2000/);
+ assert.throws(()=>mergeBackup([many],[{...course,lessons:[lesson('extra')]}]),/2,000/);
  assert.equal(full.length,30);assert.equal(many.lessons.length,2000);
 });
 test('Weekly activity uses local calendar days, Monday boundaries, and excludes future dates',()=>{

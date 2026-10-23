@@ -5,9 +5,9 @@ export function isVergavi(value:string):boolean {
 }
 export function vergaviUrl(value:string):URL {
  const url=new URL(value);
- if(url.protocol!=='https:'||url.hostname!=='vergavi.ge'||url.port||url.username||url.password)throw new Error('Нужна HTTPS-ссылка на vergavi.ge.');
+ if(url.protocol!=='https:'||url.hostname!=='vergavi.ge'||url.port||url.username||url.password)throw new Error('An HTTPS link to vergavi.ge is required.');
  const path=url.pathname.replace(/\/$/,'');
- if(!/^\/(?:learn|program(?:\/(?:a1|a2|b1|b2|c1|c2))?)$/.test(path))throw new Error('Добавь vergavi.ge/learn или страницу программы /program.');
+ if(!/^\/(?:learn|program(?:\/(?:a1|a2|b1|b2|c1|c2))?)$/.test(path))throw new Error('Add vergavi.ge/learn or a /program page.');
  url.pathname=path==='/learn'?'/program':path;url.search='';url.hash='';return url;
 }
 function plain(value:string):string {
@@ -25,10 +25,10 @@ export function parseVergavi(html:string,source:URL):Course {
   url.hash='';url.search='';url.pathname=url.pathname.replace(/\/$/,'');
   const title=plain(link[2]).slice(0,200);if(!title||seen.has(url.href))continue;
   seen.add(url.href);lessons.push({id:url.href,url:url.href,title,group:match[1].toUpperCase(),completedAt:null,note:''});
-  if(lessons.length>200)throw new Error('Слишком большая программа. Выбери отдельный уровень Vergavi.');
+  if(lessons.length>200)throw new Error('The programme is too large. Choose an individual Vergavi level.');
  }
- if(!lessons.length)throw new Error('В открытой программе Vergavi не найдены юниты. Раздел /learn требует входа на исходном сайте.');
- return {id:source.href,source:'Vergavi · грузинский',sourceUrl:source.href,title:level?`Грузинский · ${level.toUpperCase()}`:'Грузинский · Vergavi',lessons,importNotice:'План по открытой программе: один день — один юнит. Упражнения внутри юнитов доступны после входа на Vergavi.'};
+ if(!lessons.length)throw new Error('No units were found in the public Vergavi programme. The /learn section requires signing in on the source site.');
+ return {id:source.href,source:'Vergavi · Georgian',sourceUrl:source.href,title:level?`Georgian · ${level.toUpperCase()}`:'Georgian · Vergavi',lessons,importNotice:'Plan from the public programme: one unit per day. Exercises inside units are available after signing in to Vergavi.'};
 }
 export async function fetchVergavi(value:string,fetcher:typeof fetch=fetch):Promise<Course>{
  const source=vergaviUrl(value);
@@ -39,14 +39,14 @@ export async function fetchVergavi(value:string,fetcher:typeof fetch=fetch):Prom
   let response:Response|undefined;
   for(let i=0;i<4;i++){
    response=await fetcher(url,{redirect:'manual',signal:controller.signal,headers:{Accept:'text/html','User-Agent':'DayByDay/1.0 (public course outline reader)'}});
-   if(response.status>=300&&response.status<400){const location=response.headers.get('location');if(!location)throw new Error('Vergavi не отдал программу.');const target=new URL(location,url);if(target.pathname==='/login')throw new Error('Vergavi требует входа. Вставь ссылки на нужные материалы списком.');url=vergaviUrl(target.href);continue;}
+   if(response.status>=300&&response.status<400){const location=response.headers.get('location');if(!location)throw new Error('Vergavi did not provide the programme.');const target=new URL(location,url);if(target.pathname==='/login')throw new Error('Vergavi requires signing in. Paste links to the items you need as a list.');url=vergaviUrl(target.href);continue;}
    break;
   }
-  if(!response?.ok)throw new Error('Не удалось открыть публичную программу Vergavi. Попробуй позже или вставь ссылки списком.');
-  if(!response.headers.get('content-type')?.includes('text/html'))throw new Error('Vergavi вернул неподдерживаемый формат страницы.');
-  const reader=response.body?.getReader();if(!reader)throw new Error('Программа Vergavi оказалась пустой.');
+  if(!response?.ok)throw new Error('Couldn’t open the public Vergavi programme. Try again later or paste links as a list.');
+  if(!response.headers.get('content-type')?.includes('text/html'))throw new Error('Vergavi returned an unsupported page format.');
+  const reader=response.body?.getReader();if(!reader)throw new Error('The Vergavi programme is empty.');
   const decoder=new TextDecoder();let html='',bytes=0;
-  while(true){const {done,value}=await reader.read();if(done)break;bytes+=value.length;if(bytes>2_000_000){await reader.cancel();throw new Error('Программа Vergavi слишком большая. Выбери один уровень.')}html+=decoder.decode(value,{stream:true});}
+  while(true){const {done,value}=await reader.read();if(done)break;bytes+=value.length;if(bytes>2_000_000){await reader.cancel();throw new Error('The Vergavi programme is too large. Choose one level.')}html+=decoder.decode(value,{stream:true});}
   return parseVergavi(html+decoder.decode(),source);
  }finally{clearTimeout(timeout)}
 }

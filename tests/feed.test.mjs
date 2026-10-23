@@ -17,7 +17,7 @@ test('RSS and Atom feeds preserve source order and label feed completeness hones
  const one=parseFeed(rss,new URL(source)),two=parseFeed(atom,new URL('https://publisher.org/feed.atom'));
  assert.deepEqual(one.lessons.map(item=>item.title),['Lesson & One','Lesson Two']);
  assert.deepEqual(two.lessons.map(item=>item.url),['https://publisher.org/notes/1','https://publisher.org/notes/2']);
- assert.match(one.importNotice,/старые публикации могли быть исключены/);assert.ok(validCourses([one,two]));
+ assert.match(one.importNotice,/older posts may have been removed/);assert.ok(validCourses([one,two]));
 });
 
 test('Direct public feed URL imports through DNS-checked manual fetches',async()=>{
@@ -35,6 +35,6 @@ test('Feed import rejects private DNS and non-feed bodies',async()=>{
  await assert.rejects(()=>fetchCourse(source,{fetcher:async url=>{
   if(new URL(url).hostname==='cloudflare-dns.com')return Response.json({Status:0,Answer:[{type:1,data:'127.0.0.1'}]});
   calls++;return new Response(rss);
- }}),/публичного импорта/);assert.equal(calls,0);
- await assert.rejects(()=>fetchCourse(source,{fetcher:async url=>new URL(url).hostname==='cloudflare-dns.com'?dns():new Response('<html>not feed</html>',{headers:{'Content-Type':'text/html'}})}),/не RSS\/Atom/);
+ }}),/public import/);assert.equal(calls,0);
+ await assert.rejects(()=>fetchCourse(source,{fetcher:async url=>new URL(url).hostname==='cloudflare-dns.com'?dns():new Response('<html>not feed</html>',{headers:{'Content-Type':'text/html'}})}),/did not return an RSS\/Atom feed/);
 });

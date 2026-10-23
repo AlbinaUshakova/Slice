@@ -11,11 +11,11 @@ export const initialCourse: Course = {
   ].map(([slug,title]) => ({id: `${COURSE_URL}/${slug}`, title, url: `${COURSE_URL}/${slug}`, completedAt:null,note:''}))
 };
 export const practice: Record<string, { subtitle: string; prompt: string; starters: string[] }> = {
-  apologising: {subtitle:'Извиняться — легко', prompt:'Представь: ты случайно разлила кофе друга. Извинись, спроси, всё ли в порядке, и предложи помощь. Затем ответь за друга.', starters:["I’m so sorry…", 'Are you OK?', 'Let me help you.']},
-  'giving-instructions': {subtitle:'Объясняй шаг за шагом', prompt:'Объясни другу, как приготовить твой любимый завтрак. Назови четыре простых шага, а затем повтори без подсказок.', starters:['First, you…', 'Then…', 'After that…']},
-  'showing-interest': {subtitle:'Поддерживай разговор', prompt:'Расскажи о необычном событии на этой неделе. Представь реакцию собеседника и задай три уточняющих вопроса.', starters:['Really?', 'What happened next?', 'That sounds interesting!']},
-  'talking-about-personal-interests': {subtitle:'Расскажи о том, что любишь', prompt:'Расскажи новому знакомому о своих увлечениях: что тебе нравится, как часто ты этим занимаешься и почему.', starters:['I really enjoy…', 'I usually…', 'What about you?']},
-  'talking-about-your-job': {subtitle:'Знакомство через работу', prompt:'Расскажи, кем ты работаешь, кому помогаешь и что тебе нравится в работе. Представь, что знакомишься с человеком в путешествии.', starters:['I work as…', 'I help people…', 'I like my job because…']},
+  apologising: {subtitle:'Apologising is easy', prompt:'Imagine you accidentally spilled a friend’s coffee. Apologise, ask if they are okay, and offer to help. Then answer as your friend.', starters:["I’m so sorry…", 'Are you OK?', 'Let me help you.']},
+  'giving-instructions': {subtitle:'Explain it step by step', prompt:'Explain to a friend how to make your favourite breakfast. Give four simple steps, then repeat without prompts.', starters:['First, you…', 'Then…', 'After that…']},
+  'showing-interest': {subtitle:'Keep the conversation going', prompt:'Talk about an unusual event from this week. Imagine the other person’s reaction and ask three follow-up questions.', starters:['Really?', 'What happened next?', 'That sounds interesting!']},
+  'talking-about-personal-interests': {subtitle:'Talk about what you enjoy', prompt:'Tell someone new about your interests: what you enjoy, how often you do it, and why.', starters:['I really enjoy…', 'I usually…', 'What about you?']},
+  'talking-about-your-job': {subtitle:'Introduce yourself through your work', prompt:'Describe what you do, who you help, and what you enjoy about your work. Imagine meeting someone while travelling.', starters:['I work as…', 'I help people…', 'I like my job because…']},
 };
 export function nextLesson(course: Course) { return course.lessons.find(l => !l.completedAt) ?? null; }
 export function completeLesson(course: Course, id: string, date: string | null): Course {

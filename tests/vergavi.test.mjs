@@ -17,7 +17,7 @@ test('Vergavi /learn imports the public outline without fetching protected lesso
  assert.deepEqual(calls,['https://vergavi.ge/program']);
  assert.equal(course.lessons.length,2);assert.deepEqual(course.lessons.map(l=>l.group),['A1','A2']);
  assert.equal(course.lessons[0].title,'Юнит 1 — Алфавит & звуки');
- assert.match(course.importNotice,/один день — один юнит/);assert.match(course.importNotice,/входа/);
+ assert.match(course.importNotice,/one unit per day/);assert.match(course.importNotice,/signing in/);
  assert.ok(validCourses([course]));
  const saved={...course,lessons:course.lessons.map(l=>({...l,note:'Мои заметки',completedAt:'2026-10-13T07:00:00Z'}))};
  assert.equal(mergeCourse(saved,course).lessons[0].note,'Мои заметки');
@@ -25,7 +25,7 @@ test('Vergavi /learn imports the public outline without fetching protected lesso
 test('A single level excludes other levels and unpublished headings',()=>{
  const course=parseVergavi(html,vergaviUrl('https://vergavi.ge/program/a1/'));
  assert.equal(course.lessons.length,1);assert.equal(course.lessons[0].group,'A1');
- assert.throws(()=>parseVergavi('<h1>Войти</h1>',vergaviUrl('https://vergavi.ge/learn')),/требует входа/);
+ assert.throws(()=>parseVergavi('<h1>Войти</h1>',vergaviUrl('https://vergavi.ge/learn')),/requires signing in/);
 });
 test('Level links use the shared public outline despite their different card markup',async()=>{
  const calls=[];
@@ -41,6 +41,6 @@ test('Vergavi rejects unsafe destinations and does not follow external or login 
  }
 });
 test('Failed and oversized public responses do not produce fake course plans',async()=>{
- await assert.rejects(fetchVergavi('https://vergavi.ge/learn',async()=>new Response('blocked',{status:403})),/публичную программу/);
- await assert.rejects(fetchVergavi('https://vergavi.ge/learn',async()=>new Response('x'.repeat(2_000_001),{headers:{'content-type':'text/html'}})),/слишком большая/);
+ await assert.rejects(fetchVergavi('https://vergavi.ge/learn',async()=>new Response('blocked',{status:403})),/public Vergavi programme/);
+ await assert.rejects(fetchVergavi('https://vergavi.ge/learn',async()=>new Response('x'.repeat(2_000_001),{headers:{'content-type':'text/html'}})),/too large/);
 });

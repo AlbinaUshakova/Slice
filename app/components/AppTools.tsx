@@ -17,15 +17,15 @@ export default function AppTools(){
  useEffect(()=>{if(help)dialog.current?.showModal();else dialog.current?.close()},[help]);
  async function requestInstall(){if(!install){setHelp(true);return}try{await install.prompt();await install.userChoice}catch{setHelp(true)}finally{setInstall(null)}}
  return <div className="app-tools">
-  {!installed&&<button className="install-app-button" onClick={()=>void requestInstall()}><Download size={14}/>Установить</button>}
-  {donation&&<a href={donation} target="_blank" rel="noopener noreferrer"><Heart size={14}/>Поддержать</a>}
-  {offline&&<span className="offline-status" role="status"><WifiOff size={13}/>Без интернета</span>}
+  {!installed&&<button className="install-app-button" onClick={()=>void requestInstall()}><Download size={14}/>Install</button>}
+  {donation&&<a href={donation} target="_blank" rel="noopener noreferrer"><Heart size={14}/>Support</a>}
+  {offline&&<span className="offline-status" role="status"><WifiOff size={13}/>Offline</span>}
   <dialog ref={dialog} className="import-dialog install-dialog" onCancel={()=>setHelp(false)} onClick={e=>{if(e.target===e.currentTarget)setHelp(false)}}>
-   <div className="dialog-heading"><h2>Установить приложение</h2><button className="icon-button" aria-label="Закрыть" onClick={()=>setHelp(false)}><X size={20}/></button></div>
+   <div className="dialog-heading"><h2>Install the app</h2><button className="icon-button" aria-label="Close" onClick={()=>setHelp(false)}><X size={20}/></button></div>
    <img className="install-logo" src="/brand/step-flag-app.svg" width="72" height="72" alt=""/>
-   {ios?<p>В Safari: <b>«Поделиться» → «На экран Домой» → «Добавить»</b>.</p>:<p>В меню браузера выбери <b>«Установить приложение»</b> или <b>«Добавить на главный экран»</b>.</p>}
-   <p className="field-hint">Нет такого пункта? Открой сайт в Safari или Chrome.</p>
-   <button className="button primary wide" onClick={()=>setHelp(false)}>Понятно</button>
+   {ios?<p>In Safari: <b>Share → Add to Home Screen → Add</b>.</p>:<p>In your browser menu, choose <b>Install app</b> or <b>Add to Home Screen</b>.</p>}
+   <p className="field-hint">Don’t see this option? Open the site in Safari or Chrome.</p>
+   <button className="button primary wide" onClick={()=>setHelp(false)}>Got it</button>
   </dialog>
  </div>;
 }

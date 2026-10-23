@@ -12,39 +12,39 @@ export function isSpotify(value:string):boolean {
 }
 
 export function spotifyShowUrl(value:string):URL {
- let url:URL;try{url=new URL(value)}catch{throw new Error('Вставь ссылку на подкаст Spotify.')}
+ let url:URL;try{url=new URL(value)}catch{throw new Error('Paste a link to a Spotify podcast.')}
  const match=/^\/show\/([A-Za-z0-9]{22})\/?$/.exec(url.pathname);
  if(url.protocol!=='https:'||url.hostname.toLowerCase()!==SPOTIFY_HOST||url.port||url.username||url.password||!match)
-  throw new Error('Нужна открытая ссылка на подкаст Spotify.');
+  throw new Error('A public Spotify podcast link is required.');
  return new URL(`https://${SPOTIFY_HOST}/show/${match[1]}`);
 }
 
 export function parsePodcastFeed(xml:string,source:URL):Course {
  const course=parseFeed(xml,source,{sourceName:'Spotify · RSS'});
- return {...course,importNotice:`Загружено из официальной открытой RSS-ленты: ${course.lessons.length} выпусков. Ссылки открывают страницы выпусков автора.`};
+ return {...course,importNotice:`Loaded from the official public RSS feed: ${course.lessons.length} episodes. Links open the publisher’s episode pages.`};
 }
 
 function knownFeed(source:URL):URL {
  const id=source.pathname.split('/').at(-1)??'';const value=SPOTIFY_FEEDS[id];
- if(!value)throw new Error('Spotify показывает только часть выпусков. Для этого подкаста пока не найдена официальная открытая RSS-лента.');
+ if(!value)throw new Error('Spotify shows only some episodes. An official public RSS feed has not yet been found for this podcast.');
  return new URL(value);
 }
 
 function validFeedRedirect(value:string,base:URL):URL {
  const url=new URL(value,base);
  if(url.protocol!=='https:'||url.hostname!==base.hostname||url.port||url.username||url.password)
-  throw new Error('RSS-лента перенаправила запрос на неподдерживаемый адрес.');
+  throw new Error('The RSS feed redirected to an unsupported address.');
  return url;
 }
 
 async function readFeed(response:Response):Promise<string> {
- if(!response.ok)throw new Error('Не удалось открыть RSS-ленту подкаста. Попробуй позже.');
+ if(!response.ok)throw new Error('Couldn’t open the podcast RSS feed. Try again later.');
  if(!/\b(?:application|text)\/(?:rss\+xml|xml)\b/i.test(response.headers.get('content-type')??''))
-  throw new Error('Источник вернул не RSS-ленту.');
- const reader=response.body?.getReader();if(!reader)throw new Error('RSS-лента оказалась пустой.');
+  throw new Error('The source did not return an RSS feed.');
+ const reader=response.body?.getReader();if(!reader)throw new Error('The RSS feed is empty.');
  const decoder=new TextDecoder();let xml='',bytes=0;
  while(true){const part=await reader.read();if(part.done)break;bytes+=part.value.length;
-  if(bytes>MAX_FEED_BYTES){await reader.cancel();throw new Error('RSS-лента слишком большая.');}
+  if(bytes>MAX_FEED_BYTES){await reader.cancel();throw new Error('The RSS feed is too large.');}
   xml+=decoder.decode(part.value,{stream:true});
  }
  return xml+decoder.decode();
@@ -58,14 +58,14 @@ export async function fetchSpotify(value:string,fetcher:typeof fetch=fetch):Prom
    const response=await fetcher(feed,{redirect:'manual',signal:controller.signal,headers:{Accept:'application/rss+xml, application/xml;q=0.9, text/xml;q=0.8','User-Agent':'DayByDay/1.0 (podcast course organizer)'}});
    if(response.status>=300&&response.status<400){
     const location=response.headers.get('location');await response.body?.cancel();
-    if(!location)throw new Error('RSS-лента вернула пустое перенаправление.');
+    if(!location)throw new Error('The RSS feed returned an empty redirect.');
     feed=validFeedRedirect(location,feed);continue;
    }
    return parsePodcastFeed(await readFeed(response),source);
   }
-  throw new Error('Слишком много перенаправлений RSS-ленты.');
+  throw new Error('Too many RSS feed redirects.');
  }catch(error){
-  if(error instanceof Error&&error.name==='AbortError')throw new Error('RSS-лента отвечает слишком долго. Попробуй ещё раз.');
+  if(error instanceof Error&&error.name==='AbortError')throw new Error('The RSS feed is taking too long to respond. Try again.');
   throw error;
  }finally{clearTimeout(timeout)}
 }

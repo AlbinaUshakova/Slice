@@ -27,12 +27,12 @@ test('Pagination joins actual videos in order and never requests a source-provid
 });
 test('Partial or private unknown playlists fail instead of silently saving an incomplete plan',async()=>{
  const other='https://www.youtube.com/playlist?list=PLtest1234567890';
- await assert.rejects(()=>fetchCourse(other,{fetcher:async()=>new Response(doc([video('P8Mad3Z1rNw','First')],49))}),/часть/);
+ await assert.rejects(()=>fetchCourse(other,{fetcher:async()=>new Response(doc([video('P8Mad3Z1rNw','First')],49))}),/part of the playlist/);
  await assert.rejects(()=>fetchCourse(other,{fetcher:async()=>new Response('Forbidden',{status:403})}));
 });
 test('Verified user playlist fallback creates 49 dated days and reimport retains practice notes',async()=>{
  const c=await fetchCourse(url,{fetcher:async()=>new Response('Forbidden',{status:403})});
- assert.equal(c.lessons.length,49);assert.match(c.lessons[0].title,/Вводный/);assert.match(c.lessons.at(-1).title,/Урок 48/);assert.match(c.importNotice,/13\.10\.2026/);
+ assert.equal(c.lessons.length,49);assert.match(c.lessons[0].title,/Вводный/);assert.match(c.lessons.at(-1).title,/Урок 48/);assert.match(c.importNotice,/13 Oct 2026/);
  assert.equal(plannedDay('2026-10-13',48),'2026-11-30');
  const old=completeLesson(c,c.lessons[0].id,'2026-10-13T08:00:00Z');old.lessons[0].note='Моя практика';
  assert.equal(mergeCourse(old,c).lessons[0].note,'Моя практика');assert.ok(validCourses(JSON.parse(JSON.stringify([c]))));
@@ -51,7 +51,7 @@ test('Import uses edge-supported manual redirects for initial and continuation r
  let calls=0;
  const c=await fetchCourse('https://youtube.com/playlist?list=PLiSkEduwqnWuML6iA7ugsOy8hjJT9ycei&si=6mOoCS0JhaYKJu3I',{fetcher:async(input,options)=>{
   assert.equal(options.redirect,'manual','Cloudflare does not support redirect:error');calls++;
-  if(calls===1){assert.equal(String(input),'https://www.youtube.com/playlist?list=PLiSkEduwqnWuML6iA7ugsOy8hjJT9ycei&hl=ru');return new Response(doc([video('GfoVw_HQgmI','День 1'),{continuationCommand:{token:'more'}}],2))}
+  if(calls===1){assert.equal(String(input),'https://www.youtube.com/playlist?list=PLiSkEduwqnWuML6iA7ugsOy8hjJT9ycei&hl=en');return new Response(doc([video('GfoVw_HQgmI','День 1'),{continuationCommand:{token:'more'}}],2))}
   return Response.json({onResponseReceivedActions:[{appendContinuationItemsAction:{continuationItems:[video('nB9d8T1Q51w','День 12')]}}]});
  }});
  assert.equal(calls,2);assert.equal(c.lessons.length,2);assert.equal(c.importNotice,undefined);

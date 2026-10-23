@@ -25,7 +25,7 @@ self.addEventListener('fetch',event=>{
  if(req.mode==='navigate'&&PAGES.has(url.pathname)){
   event.respondWith((async()=>{
    try{const response=await fetch(req);if(response.ok&&!response.redirected&&response.headers.get('content-type')?.includes('text/html')){const text=await response.clone().text();if(text.includes('day-by-day-shell')){const cache=await caches.open(CACHE);await cache.put(url.pathname,response.clone())}}return response}
-   catch{return await caches.match(url.pathname)??await caches.match('/offline.html')??new Response('Нет подключения',{status:503})}
+   catch{return await caches.match(url.pathname)??await caches.match('/offline.html')??new Response('Offline',{status:503})}
   })());return;
  }
  if(url.pathname.startsWith('/_next/static/')||PRECACHE.includes(url.pathname))event.respondWith((async()=>{

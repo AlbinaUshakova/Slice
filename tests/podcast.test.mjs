@@ -22,7 +22,7 @@ test('Podcast RSS parser preserves feed order, decodes titles and removes duplic
  assert.equal(course.title,'Английский & язык');
  assert.deepEqual(course.lessons.map(lesson=>lesson.title),["Урок 1. It's easy",'Урок 2']);
  assert.deepEqual(course.lessons.map(lesson=>lesson.url),['https://englishgalaxy.mave.digital/ep-1','https://englishgalaxy.mave.digital/ep-2']);
- assert.match(course.importNotice,/2 выпусков/);assert.ok(validCourses([course]));
+ assert.match(course.importNotice,/2 episodes/);assert.ok(validCourses([course]));
 });
 
 test('Known Spotify show imports its complete official RSS feed instead of the visible page',async()=>{
@@ -35,5 +35,5 @@ test('Known Spotify show imports its complete official RSS feed instead of the v
 });
 
 test('Unknown Spotify shows fail clearly instead of silently importing a partial page',async()=>{
- await assert.rejects(()=>fetchCourse('https://open.spotify.com/show/1234567890123456789012'),/официальная открытая RSS-лента/);
+ await assert.rejects(()=>fetchCourse('https://open.spotify.com/show/1234567890123456789012'),/official public RSS feed/);
 });

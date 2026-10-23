@@ -13,14 +13,14 @@ function database():Promise<IDBDatabase>{
    // V1 used the lesson key as the record ID. Keep that audio and add the lesson index.
    const cursor=store.openCursor();cursor.onsuccess=()=>{const row=cursor.result;if(row){if(!row.value.lessonKey)row.update(migrateRecording(row.value));row.continue()}};
   };
-  request.onerror=()=>reject(request.error);request.onblocked=()=>reject(new Error('Хранилище занято. Закрой другие вкладки.'));request.onsuccess=()=>{request.result.onversionchange=()=>request.result.close();resolve(request.result)};
+  request.onerror=()=>reject(request.error);request.onblocked=()=>reject(new Error('Storage is busy. Close other tabs.'));request.onsuccess=()=>{request.result.onversionchange=()=>request.result.close();resolve(request.result)};
  });
 }
 async function transaction<T>(mode:IDBTransactionMode,run:(store:IDBObjectStore)=>IDBRequest<T>):Promise<T>{
  const db=await database();
  return new Promise((resolve,reject)=>{
   const tx=db.transaction('recordings',mode);let result:T;const req=run(tx.objectStore('recordings'));
-  req.onsuccess=()=>{result=req.result};tx.oncomplete=()=>{db.close();resolve(result)};tx.onerror=tx.onabort=()=>{db.close();reject(tx.error??new Error('Не удалось сохранить запись.'))};
+  req.onsuccess=()=>{result=req.result};tx.oncomplete=()=>{db.close();resolve(result)};tx.onerror=tx.onabort=()=>{db.close();reject(tx.error??new Error('Couldn’t save the recording.'))};
  });
 }
 export const recordingKey=(courseId:string,lessonId:string)=>JSON.stringify([courseId,lessonId]);

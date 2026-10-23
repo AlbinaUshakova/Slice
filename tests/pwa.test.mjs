@@ -29,7 +29,7 @@ test('Login pages and redirects are not saved as an offline app',async()=>{
 });
 test('Install manifest includes standalone launch and valid 192/512 app icons',()=>{
  const manifest=JSON.parse(fs.readFileSync(new URL('../public/manifest.webmanifest',import.meta.url),'utf8'));
- assert.equal(manifest.display,'standalone');assert.equal(manifest.scope,'/');assert.equal(manifest.start_url,'/');
+ assert.equal(manifest.display,'standalone');assert.equal(manifest.scope,'/');assert.equal(manifest.start_url,'/app');
  for(const size of [192,512]){
   const icon=manifest.icons.find(i=>i.sizes===`${size}x${size}`);assert.ok(icon);
   const data=fs.readFileSync(new URL('../public'+icon.src,import.meta.url));assert.equal(data.readUInt32BE(16),size);assert.equal(data.readUInt32BE(20),size);

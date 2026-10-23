@@ -32,7 +32,7 @@ function cleanLink(value:string,source:URL):URL|null{
 export function singlePage(source:URL,title?:string,notice?:string):Course{
  const name=(title||source.hostname).slice(0,120);
  return{id:source.href,title:name,source:source.hostname.replace(/^www\./,''),sourceUrl:source.href,
-  importNotice:notice??'Список материалов не найден. Можно сохранить страницу на один день или вставить ссылки списком.',
+  importNotice:notice??'No item list was found. You can save this page for one day or paste links as a list.',
   lessons:[{id:source.href,url:source.href,title:name,note:'',completedAt:null}]};
 }
 export function parseWebPage(html:string,source:URL):Course{
@@ -43,9 +43,9 @@ export function parseWebPage(html:string,source:URL):Course{
  // A full article is itself a daily item; related links must not replace it.
  const article=nodes.some(n=>tag(n)==='meta'&&attr(n,'property')==='og:type'&&attr(n,'content')==='article');
  const collectionPath=/\/(?:tags?|categor(?:y|ies)|topics?)(?:\/|$)/i.test(source.pathname)||/\/(?:blog|articles|news|program|courses)\/?$/i.test(source.pathname);
- if(article&&!collectionPath)return {...base,importNotice:'Одна статья — один день.'};
+ if(article&&!collectionPath)return {...base,importNotice:'One article, one day.'};
  if(/\/(?:login|signin|auth)(?:\/|$)/i.test(source.pathname)||nodes.some(n=>tag(n)==='input'&&attr(n,'type')==='password'))
-  return singlePage(source,title,'Страница требует входа. Вставь ссылки на материалы списком или сохрани эту страницу на один день.');
+  return singlePage(source,title,'This page requires signing in. Paste item links as a list or save this page for one day.');
  const naked=/^(?:www\.)?naked-science\.ru$/.test(source.hostname)&&source.pathname.startsWith('/tags/');
  const scope=(naked?nodes.find(n=>attr(n,'id')==='ns-tag-news'):undefined)??nodes.find(n=>tag(n)==='main'||attr(n,'role')==='main')??document;
  const content=all(scope).filter(n=>!excluded(n));
@@ -77,14 +77,14 @@ export function parseWebPage(html:string,source:URL):Course{
  }
  if(!lessons.length)return base;
  const shared=lessons.some(l=>l.url===source.href);
- const notice=shared?'План по темам открытой программы. У тем нет отдельных ссылок: открывается общая страница.':
-  `Найдено на первой открытой странице: ${lessons.length}. Полнота списка не подтверждена; следующие страницы и новые публикации автоматически не добавляются.`;
- return {...base,lessons:lessons.slice(0,200),importNotice:notice+(lessons.length>200?' Показаны первые 200 материалов.':'')};
+ const notice=shared?'Plan based on topics in the public programme. Topics do not have separate links, so the shared page opens.':
+  `Found on the first public page: ${lessons.length}. The list may be incomplete; later pages and new posts are not added automatically.`;
+ return {...base,lessons:lessons.slice(0,200),importNotice:notice+(lessons.length>200?' The first 200 items are shown.':'')};
 }
 export async function fetchWebCourse(value:string,fetcher:typeof fetch=fetch):Promise<Course>{
  const source=publicUrl(value);
  if(/^(?:web\.telegram\.org|t\.me|telegram\.me)$/.test(source.hostname))return singlePage(source,'Telegram',
-  'Ссылки из закрепа: скопируй их сюда, каждую с новой строки. Этот адрес можно сохранить одним пунктом; закрытые сообщения автоматически не читаются.');
+  'Links from a pinned post: copy them here, one per line. You can save this address as a single item; private messages cannot be read automatically.');
  try{
   const page=await readPublicPage(value,fetcher);const course=parseWebPage(page.html,page.url);
   // Keep the submitted URL for fallback, especially when a site redirects to sign-in.
@@ -92,6 +92,6 @@ export async function fetchWebCourse(value:string,fetcher:typeof fetch=fetch):Pr
   return course;
  }catch(error){
   if(error instanceof UnsafePage)throw error;
-  return singlePage(source,undefined,'Не удалось прочитать список на сайте. Можно сохранить эту ссылку на один день или вставить ссылки на материалы списком.');
+  return singlePage(source,undefined,'Couldn’t read the list on the site. You can save this link for one day or paste item links as a list.');
  }
 }
