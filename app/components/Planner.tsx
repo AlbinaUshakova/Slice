@@ -10,6 +10,7 @@ import {renameMaterial,removeMaterial,reorderMaterials} from '@/lib/materials';
 import AppTools from './AppTools';
 import AppHeader from './AppHeader';
 import VoiceNote from './VoiceNote';
+import SourceArtwork from './SourceArtwork';
 import {deleteCourseRecordings,deleteLessonRecordings} from '@/lib/recordings';
 import {planCourseId} from '@/lib/navigation';
 import {parseLinkInput} from '@/lib/link-input';
@@ -132,7 +133,6 @@ export default function Planner({startView='today'}:{startView?:'home'|'today'})
  const done=course.lessons.filter(l=>l.completedAt).length;
  const finished=done===course.lessons.length;
  const planned=plannedDay(course.planStart,index);
- const repeatedLessonTitle=sameLabel(course.title,lesson.title);
  function update(updated:Course){setCourses(prev=>prev.map(c=>c.id===updated.id?updated:c))}
  function renameCollection(id:string,title:string){setCourses(prev=>prev.map(c=>c.id===id?{...c,title}:c))}
  function switchCourse(id:string){setPlanPage(0);setActive(id);setSelected(null);setView('today')}
@@ -197,9 +197,9 @@ export default function Planner({startView='today'}:{startView?:'home'|'today'})
     {storageError&&<div className="storage-warning" role="alert">{storageError}<button onClick={download}>Скачать</button></div>}
     {!ready?<p className="loading-state">Загрузка…</p>:view==='daily'?<TodayPlan courses={courses} onToggle={toggleMaterial} onLesson={(courseId,lessonId)=>{setActive(courseId);setSelected(lessonId);setView('today');setPlanPage(0)}} onAdd={()=>{setImportTarget(null);setShowImport(true)}} onHome={()=>setView('home')}/>:view==='home'?<CourseDashboard query={query} onQuery={setQuery} courses={courses} active={course.id} onPick={switchCourse} onAdd={()=>{setImportTarget(null);setShowImport(true)}} onDelete={deleteCollection} onRename={renameCollection} onReorder={(id,target)=>setCourses(prev=>reorderCourses(prev,id,target))}/>:!courses.length?<section className="empty-state"><BookOpen size={25}/><h2>С чего начнём?</h2><p>Курс, видео или статьи — по одному в день.</p><button className="button primary" onClick={()=>setShowImport(true)}>Добавить ссылку<Plus size={16}/></button></section>:!course.lessons.length?<section className="empty-state"><BookOpen size={25}/><h2>Пока пусто</h2><button className="button primary" onClick={()=>{setImportTarget(course.id);setShowImport(true)}}><Plus size={16}/>Добавить ссылки</button></section>:view==='today'?<div className="dashboard-grid">
      <div className="content-column">
-      {finished&&!selected?<section className="complete-card"><span className="eyebrow">{done} ИЗ {course.lessons.length}</span><h2>Всё пройдено!</h2><div className="button-row"><button className="button primary" onClick={()=>setView('history')}>Открыть план</button><button className="button secondary" onClick={()=>setShowImport(true)}>Новая подборка<Plus size={16}/></button></div></section>:<section className={'material-card '+(repeatedLessonTitle?'material-card-titleless':'')}>
+      {finished&&!selected?<section className="complete-card"><span className="eyebrow">{done} ИЗ {course.lessons.length}</span><h2>Всё пройдено!</h2><div className="button-row"><button className="button primary" onClick={()=>setView('history')}>Открыть план</button><button className="button secondary" onClick={()=>setShowImport(true)}>Новая подборка<Plus size={16}/></button></div></section>:<section className="material-card">
        <div className="material-top"><span className="day-label">День {pad(index+1)}</span><span className="material-date">{lesson.group&&<b>{lesson.group}</b>}{lesson.completedAt?<><Check size={12}/>{dateLabel(lesson.completedAt)}</>:planned?dateLabel(planned):'1 материал в день'}</span></div>
-       {!repeatedLessonTitle&&<h2>{lesson.title}</h2>}
+       <SourceArtwork lessonUrl={lesson.url} sourceUrl={course.sourceUrl} source={course.source}/>
        <div className="material-actions"><a className="button primary" href={lesson.url} target="_blank" rel="noopener noreferrer">Открыть<ArrowUpRight size={17}/></a><button className={'button secondary '+(lesson.completedAt?'is-done':'')} onClick={toggleDone}>{lesson.completedAt?<RotateCcw size={15}/>:<Check size={17}/>}<span>{lesson.completedAt?'Снять отметку':'Готово'}</span></button></div>
        {lesson.completedAt&&next&&<button className="next-link" onClick={()=>setSelected(null)}>Дальше<ArrowRight size={15}/></button>}
       </section>}
