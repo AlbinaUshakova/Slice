@@ -314,3 +314,22 @@ body { background:var(--paper); color:var(--ink); font-size:14px; }
  .app .mobile-nav>button.selected { background:var(--soft); color:var(--accent); }
  .app .toast { left:50%; }
 }
+
+/* Keep repeated navigation and labels out of the same viewport. */
+.app .quizlet-header { grid-template-columns:auto minmax(140px,1fr) auto; }
+.app .header-browse { display:none; }
+.app .header-search { grid-column:2; }
+.app .header-actions { grid-column:3; }
+.app .header-backup { display:none; }
+.app .material-card-titleless .material-actions { margin-top:30px; }
+.app footer { justify-content:center; }
+
+@media(max-width:720px) {
+ .app .quizlet-header { grid-template-columns:minmax(0,1fr) 44px 44px; }
+ .app .header-browse { display:block; grid-column:2; grid-row:1; }
+ .app .header-search { grid-column:1 / -1; }
+ .app .header-actions { grid-column:3; }
+ .app .header-backup { display:flex; }
+ .app .dashboard-grid { grid-template-columns:minmax(0,1fr); }
+ .app .material-card-titleless .material-actions { margin-top:26px; }
+}

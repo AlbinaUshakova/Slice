@@ -19,7 +19,6 @@ export default function AppTools(){
  return <div className="app-tools">
   {!installed&&<button className="install-app-button" onClick={()=>void requestInstall()}><Download size={14}/>Установить</button>}
   {donation&&<a href={donation} target="_blank" rel="noopener noreferrer"><Heart size={14}/>Поддержать</a>}
-  <a href="/about">О проекте</a>
   {offline&&<span className="offline-status" role="status"><WifiOff size={13}/>Без интернета</span>}
   <dialog ref={dialog} className="import-dialog install-dialog" onCancel={()=>setHelp(false)} onClick={e=>{if(e.target===e.currentTarget)setHelp(false)}}>
    <div className="dialog-heading"><h2>Установить приложение</h2><button className="icon-button" aria-label="Закрыть" onClick={()=>setHelp(false)}><X size={20}/></button></div>
