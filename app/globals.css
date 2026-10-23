@@ -428,3 +428,8 @@ body { background:var(--paper); color:var(--ink); font-size:14px; }
 .app .lesson-card .material-actions .button{flex:0 0 auto;min-height:48px}
 @media(max-width:720px){.app .lesson-card .material-actions .button{flex:0 0 auto;width:100%;min-height:52px}}
 .microphone-error{margin-top:14px;padding:18px;border:1px solid #f1c8c8;border-radius:12px;background:#fff7f7;color:#3b2a2a}.microphone-error>b{display:block;margin-bottom:5px;font-size:16px}.microphone-error p{margin:0 0 14px;color:#6d5555;line-height:1.5}.microphone-error>div{display:flex;gap:8px;flex-wrap:wrap}.microphone-error .button{min-height:42px}
+
+/* Show lesson thumbnails in full instead of cropping their edges. */
+.app .minimal-today .source-artwork{max-height:none}
+.app .source-artwork-video{background:#000}
+.app .source-artwork-video img{object-fit:contain;object-position:center}
