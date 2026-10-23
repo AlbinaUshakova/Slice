@@ -1,9 +1,9 @@
-import {localDay,planDayNumber,type Course,type Lesson} from './course.ts';
+import {courseHasStarted,localDay,planDayNumber,type Course,type Lesson} from './course.ts';
 export type TodayItem={course:Course;lesson:Lesson;done:boolean;day:number};
 export function todayItems(courses:Course[],now=new Date()):TodayItem[]{
  const today=localDay(now);
  return courses.flatMap(course=>{
-  if(course.planStart&&course.planStart>today)return [];
+  if(!courseHasStarted(course,today))return [];
   const completed=course.lessons.filter(l=>l.completedAt&&localDay(new Date(l.completedAt))===today);
   const capacity=course.pace==='twice-daily'?2:1;
   const weekend=now.getDay()===0||now.getDay()===6;

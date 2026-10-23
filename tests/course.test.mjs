@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {initialCourse,nextLesson,completeLesson,mergeCourse,validCourses,removeCourse,plannedDay,planDayNumber,courseDuration} from '../lib/course.ts';
+import {initialCourse,nextLesson,completeLesson,mergeCourse,validCourses,removeCourse,plannedDay,planDayNumber,courseDuration,courseHasStarted} from '../lib/course.ts';
 import {courseUrl,parseCourse} from '../lib/importer.ts';
 const base=structuredClone(initialCourse);
 test('Completing, reopening and undoing a lesson preserve the ordered next lesson',()=>{
@@ -64,6 +64,11 @@ test('Two-a-day groups two consecutive lessons under the same plan day',()=>{
  assert.deepEqual([0,1,2,3,4].map(index=>planDayNumber(index,'twice-daily')),[1,1,2,2,3]);
  assert.deepEqual([0,1,2].map(index=>planDayNumber(index,'daily')),[1,2,3]);
  assert.equal(courseDuration(37,'twice-daily'),19);
+});
+test('A collection starts only on its selected start date',()=>{
+ assert.equal(courseHasStarted({planStart:'2026-10-24'},'2026-10-23'),false);
+ assert.equal(courseHasStarted({planStart:'2026-10-24'},'2026-10-24'),true);
+ assert.equal(courseHasStarted({},'2026-10-23'),true);
 });
 
 test('Collection reordering persists without changing IDs, notes or completion',async()=>{

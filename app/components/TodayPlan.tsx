@@ -1,7 +1,7 @@
 'use client';
 import {useEffect,useState} from 'react';
 import {ArrowUpRight,ArrowRight,Check,BookOpen,Pencil,Plus,RotateCcw,X} from 'lucide-react';
-import {courseDuration,type Course} from '@/lib/course';
+import {courseDuration,courseHasStarted,localDay,type Course} from '@/lib/course';
 import {todayItems} from '@/lib/today';
 import SourceArtwork from './SourceArtwork';
 export default function TodayPlan({courses,onToggle,onLesson,onRename,onAdd,onHome,onOpened}:{courses:Course[];onToggle:(courseId:string,lessonId:string)=>void;onLesson:(courseId:string,lessonId:string)=>void;onRename:(courseId:string,lessonId:string,title:string)=>void;onAdd:()=>void;onHome:()=>void;onOpened?:(courseId:string,lessonId:string)=>void}){
@@ -9,7 +9,7 @@ export default function TodayPlan({courses,onToggle,onLesson,onRename,onAdd,onHo
  const [editing,setEditing]=useState<{courseId:string;lessonId:string}|null>(null);
  const [title,setTitle]=useState('');
  useEffect(()=>{const refresh=()=>setNow(new Date());const timer=setInterval(refresh,30000);window.addEventListener('focus',refresh);document.addEventListener('visibilitychange',refresh);return()=>{clearInterval(timer);window.removeEventListener('focus',refresh);document.removeEventListener('visibilitychange',refresh)}},[]);
- const items=todayItems(courses,now),done=items.filter(item=>item.done).length;
+ const items=todayItems(courses,now),done=items.filter(item=>item.done).length,waiting=courses.filter(course=>course.lessons.some(lesson=>!lesson.completedAt)&&!courseHasStarted(course,localDay(now))).length;
  function startEditing(courseId:string,lessonId:string,currentTitle:string){setEditing({courseId,lessonId});setTitle(currentTitle)}
  function cancelEditing(){setEditing(null);setTitle('')}
  function saveTitle(courseId:string,lessonId:string){const next=title.trim().slice(0,200);if(!next)return;onRename(courseId,lessonId,next);cancelEditing()}
@@ -23,6 +23,6 @@ export default function TodayPlan({courses,onToggle,onLesson,onRename,onAdd,onHo
    <div className="today-actions"><a className="button primary" href={lesson.url} target="_blank" rel="noopener noreferrer" onClick={()=>onOpened?.(course.id,lesson.id)}>Open<ArrowUpRight size={16}/></a><button className="button secondary" onClick={()=>{setNow(new Date());onToggle(course.id,lesson.id)}} aria-label={`Done: ${lesson.title}`} aria-pressed={done}><Check size={17}/>Done</button><button className="today-notes" onClick={()=>onLesson(course.id,lesson.id)}>Note & audio<ArrowRight size={14}/></button></div>
   </article>})}</div>:items.length>0&&<section className="today-complete-state"><Check size={26}/><h2>That’s all for today</h2><p>New lessons will appear tomorrow. You can also continue with the next lesson now.</p></section>}
   {completed.length>0&&<section className="completed-today"><div className="completed-heading"><h2>Done today</h2><span>{completed.length}</span></div>{completed.map(({course,lesson,day})=><div className="completed-row" key={`${course.id}:${lesson.id}`}><span className="completed-check"><Check size={15}/></span><button onClick={()=>onLesson(course.id,lesson.id)}><small>{course.title}</small><b>{lesson.title}</b></button><span>{day}</span><button className="button secondary" onClick={()=>onToggle(course.id,lesson.id)}><RotateCcw size={14}/>Undo</button></div>)}</section>}
-  {!items.length&&<section className="first-run-card today-empty"><BookOpen size={28}/><h2>{courses.length?'Nothing scheduled today':'Start with one link'}</h2><p>{courses.length?'Your next lesson is waiting in Collections.':'Turn a playlist, podcast, course, or article into a day-by-day plan.'}</p><button className="button primary" onClick={courses.length?onHome:onAdd}>{courses.length?'View collections':<><Plus size={17}/>Add link</>}</button></section>}
+  {!items.length&&<section className="first-run-card today-empty"><BookOpen size={28}/><h2>{courses.length?'Nothing scheduled today':'Start with one link'}</h2><p>{courses.length?(waiting?`${waiting} ${waiting===1?'collection is':'collections are'} waiting for the selected start date.`:'Your next lesson is waiting in Collections.'):'Turn a playlist, podcast, course, or article into a day-by-day plan.'}</p><button className="button primary" onClick={courses.length?onHome:onAdd}>{courses.length?'View collections':<><Plus size={17}/>Add link</>}</button></section>}
  </div>;
 }
