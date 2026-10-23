@@ -1,0 +1,21 @@
+.landing-browser-note {
+  line-height: normal;
+}
+
+.landing-way-card {
+  min-height: 486px;
+}
+
+#ways {
+  padding-bottom: 95px;
+}
+
+@media (max-width: 520px) {
+  .landing-way-card {
+    min-height: 0;
+  }
+
+  #ways {
+    padding-bottom: 36px;
+  }
+}
