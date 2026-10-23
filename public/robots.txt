@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Sitemap: https://english-morning-albi.devochka-name.chatgpt.site/sitemap.xml

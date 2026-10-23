@@ -1,0 +1,48 @@
+/* Keep the approved transparent artwork identical in both themes. */
+.brand-lockup {
+ --brand-ink:#0b2149;
+ --brand-filter:none;
+ display:inline-flex;
+ align-items:center;
+ gap:10px;
+ flex-shrink:0;
+ color:var(--brand-ink);
+ font-size:inherit;
+ font-weight:750;
+ letter-spacing:-.5px;
+ white-space:nowrap;
+ line-height:1.2;
+}
+.brand-lockup .brand-symbol { display:block; object-fit:contain; filter:var(--brand-filter); }
+.brand-lockup[data-tone="dark"] { --brand-ink:#f1f5ff; --brand-filter:brightness(1.7); color-scheme:dark; }
+.brand-lockup[data-tone="light"] { color-scheme:light; }
+@media(prefers-color-scheme:dark) {
+ .brand-lockup[data-tone="auto"] { --brand-ink:#f1f5ff; --brand-filter:brightness(1.7); }
+}
+/* Explicit application themes take priority over the system preference. */
+[data-theme="light"] .brand-lockup[data-tone="auto"] { --brand-ink:#0b2149; --brand-filter:none; }
+[data-theme="dark"] .brand-lockup[data-tone="auto"] { --brand-ink:#f1f5ff; --brand-filter:brightness(1.7); }
+.brand-preview { max-width:1080px; padding:48px 24px; }
+.brand-preview-back { display:inline-flex; align-items:center; min-height:44px; color:#52617a; font-size:14px; }
+.brand-preview h1 { font-size:30px; font-weight:700; letter-spacing:-.8px; margin:24px 0 32px; }
+.brand-specimens { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+.brand-specimen { position:relative; min-height:260px; border-radius:20px; padding:32px; display:flex; align-items:center; justify-content:center; }
+.brand-specimen-light { background:#fff; border:1px solid #e2e6ef; color:#617089; }
+.brand-specimen-dark { background:#111827; border:1px solid #263247; color:#abb9d0; }
+.brand-specimen-label { position:absolute; top:24px; left:26px; font-size:13px; }
+.brand-specimen .brand-lockup { font-size:28px; gap:14px; }
+.brand-specimen .brand-symbol { width:62px; height:32px; }
+@media(max-width:720px) {
+ .brand-specimens { grid-template-columns:minmax(0,1fr); gap:16px; }
+ .brand-preview { padding:24px 20px; }
+ .brand-preview h1 { font-size:26px; }
+ .brand-specimen { min-height:220px; padding:22px; }
+ .brand-specimen .brand-lockup { font-size:24px; gap:10px; }
+ .brand-specimen .brand-symbol { width:50px; height:27px; }
+ .app .quizlet-header .brand-lockup { gap:8px; }
+}
+@media(max-width:380px) {
+ .brand-specimen .brand-lockup { font-size:20px; }
+ .brand-specimen .brand-symbol { width:44px; }
+ .app .quizlet-header .brand-lockup { gap:6px; }
+}

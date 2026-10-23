@@ -1,0 +1,177 @@
+{
+  "checkedAt": "2026-10-13",
+  "courses": [
+    {
+      "id": "https://learnenglish.britishcouncil.org/free-resources/speaking/a1",
+      "title": "A1 speaking",
+      "source": "British Council",
+      "sourceUrl": "https://learnenglish.britishcouncil.org/free-resources/speaking/a1",
+      "lessons": [
+        {
+          "id": "https://learnenglish.britishcouncil.org/free-resources/speaking/a1/checking-understanding",
+          "url": "https://learnenglish.britishcouncil.org/free-resources/speaking/a1/checking-understanding",
+          "title": "Checking understanding",
+          "completedAt": null,
+          "note": ""
+        },
+        {
+          "id": "https://learnenglish.britishcouncil.org/free-resources/speaking/a1/making-suggestions",
+          "url": "https://learnenglish.britishcouncil.org/free-resources/speaking/a1/making-suggestions",
+          "title": "Making suggestions",
+          "completedAt": null,
+          "note": ""
+        },
+        {
+          "id": "https://learnenglish.britishcouncil.org/free-resources/speaking/a1/meeting-new-people",
+          "url": "https://learnenglish.britishcouncil.org/free-resources/speaking/a1/meeting-new-people",
+          "title": "Meeting new people",
+          "completedAt": null,
+          "note": ""
+        },
+        {
+          "id": "https://learnenglish.britishcouncil.org/free-resources/speaking/a1/talking-about-other-people",
+          "url": "https://learnenglish.britishcouncil.org/free-resources/speaking/a1/talking-about-other-people",
+          "title": "Talking about other people",
+          "completedAt": null,
+          "note": ""
+        },
+        {
+          "id": "https://learnenglish.britishcouncil.org/free-resources/speaking/a1/talking-about-where-youre",
+          "url": "https://learnenglish.britishcouncil.org/free-resources/speaking/a1/talking-about-where-youre",
+          "title": "Talking about where you're from",
+          "completedAt": null,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "id": "https://learnenglish.britishcouncil.org/free-resources/speaking/a2",
+      "title": "A2 speaking",
+      "source": "British Council",
+      "sourceUrl": "https://learnenglish.britishcouncil.org/free-resources/speaking/a2",
+      "lessons": [
+        {
+          "id": "https://learnenglish.britishcouncil.org/free-resources/speaking/a2/apologising",
+          "url": "https://learnenglish.britishcouncil.org/free-resources/speaking/a2/apologising",
+          "title": "Apologising",
+          "completedAt": null,
+          "note": ""
+        },
+        {
+          "id": "https://learnenglish.britishcouncil.org/free-resources/speaking/a2/giving-instructions",
+          "url": "https://learnenglish.britishcouncil.org/free-resources/speaking/a2/giving-instructions",
+          "title": "Giving instructions",
+          "completedAt": null,
+          "note": ""
+        },
+        {
+          "id": "https://learnenglish.britishcouncil.org/free-resources/speaking/a2/showing-interest",
+          "url": "https://learnenglish.britishcouncil.org/free-resources/speaking/a2/showing-interest",
+          "title": "Showing interest",
+          "completedAt": null,
+          "note": ""
+        },
+        {
+          "id": "https://learnenglish.britishcouncil.org/free-resources/speaking/a2/talking-about-personal-interests",
+          "url": "https://learnenglish.britishcouncil.org/free-resources/speaking/a2/talking-about-personal-interests",
+          "title": "Talking about personal interests",
+          "completedAt": null,
+          "note": ""
+        },
+        {
+          "id": "https://learnenglish.britishcouncil.org/free-resources/speaking/a2/talking-about-your-job",
+          "url": "https://learnenglish.britishcouncil.org/free-resources/speaking/a2/talking-about-your-job",
+          "title": "Talking about your job",
+          "completedAt": null,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "id": "https://learnenglish.britishcouncil.org/free-resources/speaking/b1",
+      "title": "B1 speaking",
+      "source": "British Council",
+      "sourceUrl": "https://learnenglish.britishcouncil.org/free-resources/speaking/b1",
+      "lessons": [
+        {
+          "id": "https://learnenglish.britishcouncil.org/free-resources/speaking/b1/agreeing-disagreeing",
+          "url": "https://learnenglish.britishcouncil.org/free-resources/speaking/b1/agreeing-disagreeing",
+          "title": "Agreeing and disagreeing",
+          "completedAt": null,
+          "note": ""
+        },
+        {
+          "id": "https://learnenglish.britishcouncil.org/free-resources/speaking/b1/asking-favour",
+          "url": "https://learnenglish.britishcouncil.org/free-resources/speaking/b1/asking-favour",
+          "title": "Asking a favour",
+          "completedAt": null,
+          "note": ""
+        },
+        {
+          "id": "https://learnenglish.britishcouncil.org/free-resources/speaking/b1/keeping-conversation-going",
+          "url": "https://learnenglish.britishcouncil.org/free-resources/speaking/b1/keeping-conversation-going",
+          "title": "Keeping a conversation going",
+          "completedAt": null,
+          "note": ""
+        },
+        {
+          "id": "https://learnenglish.britishcouncil.org/free-resources/speaking/b1/meeting-face-face",
+          "url": "https://learnenglish.britishcouncil.org/free-resources/speaking/b1/meeting-face-face",
+          "title": "Meeting face-to-face",
+          "completedAt": null,
+          "note": ""
+        },
+        {
+          "id": "https://learnenglish.britishcouncil.org/free-resources/speaking/b1/responding-news",
+          "url": "https://learnenglish.britishcouncil.org/free-resources/speaking/b1/responding-news",
+          "title": "Responding to news",
+          "completedAt": null,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "id": "https://learnenglish.britishcouncil.org/free-resources/speaking/b2",
+      "title": "B2 speaking",
+      "source": "British Council",
+      "sourceUrl": "https://learnenglish.britishcouncil.org/free-resources/speaking/b2",
+      "lessons": [
+        {
+          "id": "https://learnenglish.britishcouncil.org/free-resources/speaking/b2/challenging-someones-ideas",
+          "url": "https://learnenglish.britishcouncil.org/free-resources/speaking/b2/challenging-someones-ideas",
+          "title": "Challenging someone's ideas",
+          "completedAt": null,
+          "note": ""
+        },
+        {
+          "id": "https://learnenglish.britishcouncil.org/free-resources/speaking/b2/dealing-problem",
+          "url": "https://learnenglish.britishcouncil.org/free-resources/speaking/b2/dealing-problem",
+          "title": "Dealing with a problem",
+          "completedAt": null,
+          "note": ""
+        },
+        {
+          "id": "https://learnenglish.britishcouncil.org/free-resources/speaking/b2/discussing-advantages-disadvantages",
+          "url": "https://learnenglish.britishcouncil.org/free-resources/speaking/b2/discussing-advantages-disadvantages",
+          "title": "Discussing advantages and disadvantages",
+          "completedAt": null,
+          "note": ""
+        },
+        {
+          "id": "https://learnenglish.britishcouncil.org/free-resources/speaking/b2/giving-advice",
+          "url": "https://learnenglish.britishcouncil.org/free-resources/speaking/b2/giving-advice",
+          "title": "Giving advice",
+          "completedAt": null,
+          "note": ""
+        },
+        {
+          "id": "https://learnenglish.britishcouncil.org/free-resources/speaking/b2/persuading-someone-do-something",
+          "url": "https://learnenglish.britishcouncil.org/free-resources/speaking/b2/persuading-someone-do-something",
+          "title": "Persuading someone to do something",
+          "completedAt": null,
+          "note": ""
+        }
+      ]
+    }
+  ]
+}

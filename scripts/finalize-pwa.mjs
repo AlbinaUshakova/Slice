@@ -1,0 +1,14 @@
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import {createHash} from 'node:crypto';
+const root=path.resolve('dist/client');
+const files=await fs.readdir(root,{recursive:true});
+const assets=files.filter(f=>f.startsWith('_next/static/')&&/\.(js|css|woff2?)$/.test(f)).map(f=>'/'+f);
+assets.push('/manifest.webmanifest','/brand/loop-dot/mark-small.png','/brand/loop-dot/icon-192.png','/brand/loop-dot/icon-512.png','/brand/loop-dot/apple-touch-icon.png','/brand/loop-dot/favicon.png','/brand/loop-dot/favicon-adaptive.svg','/offline.html');
+const template=await fs.readFile('public/sw.js','utf8');
+const hash=createHash('sha256').update(template);
+for(const asset of assets.sort())hash.update(await fs.readFile(path.join(root,asset.slice(1))));
+const id=hash.digest('hex').slice(0,16);
+await fs.writeFile(path.join(root,'sw.js'),template.replace('__BUILD_ID__',id).replace('/* PRECACHE */[]',JSON.stringify(assets)));
+await fs.appendFile(path.join(root,'_headers'),'\n/sw.js\n  Cache-Control: no-cache\n  Service-Worker-Allowed: /\n/manifest.webmanifest\n  Cache-Control: no-cache\n');
+console.log(`PWA: ${assets.length} assets, cache ${id}`);
