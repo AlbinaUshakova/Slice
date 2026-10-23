@@ -1,20 +1,20 @@
 /* Keep the approved transparent artwork identical in both themes. */
 .brand-lockup {
- --brand-ink:#0b2149;
+ --brand-ink:#20242d;
  --brand-filter:none;
  display:inline-flex;
  align-items:center;
- gap:10px;
+ gap:11px;
  flex-shrink:0;
  color:var(--brand-ink);
  font-size:inherit;
- font-weight:750;
- letter-spacing:-.5px;
+ font-weight:780;
+ letter-spacing:-.8px;
  white-space:nowrap;
  line-height:1.2;
 }
 .brand-lockup .brand-symbol { display:block; object-fit:contain; filter:var(--brand-filter); }
-.brand-lockup[data-tone="dark"] { --brand-ink:#f1f5ff; --brand-filter:brightness(1.7); color-scheme:dark; }
+.brand-lockup[data-tone="dark"] { --brand-ink:#f1f5ff; --brand-filter:brightness(0) invert(1); color-scheme:dark; }
 .brand-lockup[data-tone="light"] { color-scheme:light; }
 @media(prefers-color-scheme:dark) {
  .brand-lockup[data-tone="auto"] { --brand-ink:#f1f5ff; --brand-filter:brightness(1.7); }

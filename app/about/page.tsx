@@ -3,7 +3,7 @@ export const dynamic='force-dynamic';
 export const metadata={title:'О проекте — Day by Day',description:'Как устроен Day by Day, где хранятся данные и как установить приложение.'};
 export default function About(){const support=donationUrl(process.env.DONATION_URL);return <main className="about-page">
  <a href="/" className="about-back">← Главная</a>
- <img src="/brand/loop-dot/icon-192.png" alt="" width="64" height="64"/>
+ <img src="/brand/step-flag-app.svg" alt="" width="64" height="64"/>
  <h1>Day by Day</h1>
  <p className="about-intro">Твои ссылки. Один материал в день.</p>
  <section><h2>Как начать</h2><p>Добавь ссылку на курс, плейлист или подборку статей. Проверь список и сохрани план. Каждый день открывай следующий материал, отмечай «Готово» и оставляй заметки.</p><p>Если сайт не отдаёт список, вставь ссылки на уроки с новой строки — каждая станет отдельным днём.</p></section>

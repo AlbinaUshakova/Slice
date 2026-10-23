@@ -4,7 +4,7 @@ import './brand.css';
 export const metadata: Metadata = {
  title:'Day by Day — интересное, шаг за шагом',
  description:'Статьи, видео и курсы в одном маршруте. Следующий материал, заметки и прогресс — каждый день в своём темпе.',
- icons:{icon:[{url:'/brand/loop-dot/favicon.png',type:'image/png',sizes:'64x64'},{url:'/brand/loop-dot/favicon-adaptive.svg',type:'image/svg+xml',sizes:'any'}],apple:'/brand/loop-dot/apple-touch-icon.png'},
+ icons:{icon:[{url:'/brand/step-flag.svg',type:'image/svg+xml',sizes:'any'}],apple:'/brand/loop-dot/apple-touch-icon.png'},
  metadataBase:new URL('https://english-morning-albi.devochka-name.chatgpt.site'),
  openGraph:{title:'Day by Day',description:'Статьи, видео и тренировки — один материал в день.',images:[{url:'/brand/loop-dot/share-card.png',width:1200,height:630}],locale:'ru_RU',type:'website'},
  twitter:{card:'summary_large_image',title:'Day by Day',images:['/brand/loop-dot/share-card.png']},

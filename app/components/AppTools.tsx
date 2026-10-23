@@ -23,7 +23,7 @@ export default function AppTools(){
   {offline&&<span className="offline-status" role="status"><WifiOff size={13}/>Без интернета</span>}
   <dialog ref={dialog} className="import-dialog install-dialog" onCancel={()=>setHelp(false)} onClick={e=>{if(e.target===e.currentTarget)setHelp(false)}}>
    <div className="dialog-heading"><h2>Установить приложение</h2><button className="icon-button" aria-label="Закрыть" onClick={()=>setHelp(false)}><X size={20}/></button></div>
-   <img className="install-logo" src="/brand/loop-dot/icon-192.png" width="72" height="72" alt=""/>
+   <img className="install-logo" src="/brand/step-flag-app.svg" width="72" height="72" alt=""/>
    {ios?<p>В Safari: <b>«Поделиться» → «На экран Домой» → «Добавить»</b>.</p>:<p>В меню браузера выбери <b>«Установить приложение»</b> или <b>«Добавить на главный экран»</b>.</p>}
    <p className="field-hint">Нет такого пункта? Открой сайт в Safari или Chrome.</p>
    <button className="button primary wide" onClick={()=>setHelp(false)}>Понятно</button>
