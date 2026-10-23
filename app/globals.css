@@ -342,6 +342,17 @@ body { background:var(--paper); color:var(--ink); font-size:14px; }
 .source-artwork-logo img { width:42%; height:42%; object-fit:contain; filter:drop-shadow(0 8px 20px #25385c1a); }
 .source-artwork-compact { margin:0 0 24px; border-radius:12px; }
 
+/* Inline topic editing keeps source artwork as the card's primary content. */
+.today-card-meta { display:flex; align-items:center; gap:3px; color:#77849a; font-size:11px; white-space:nowrap; }
+.today-card-meta>span { padding-left:4px; }
+.today-rename-trigger { width:36px; height:36px; min-height:36px; color:#66758c; }
+.today-rename-trigger:hover { background:#eef0ff; color:#3545ce; }
+.today-rename-form { display:grid; grid-template-columns:minmax(0,1fr) auto auto; gap:8px; align-items:center; margin:-4px 0 18px; padding:12px; border:1px solid #d8dfec; border-radius:12px; background:#f7f9fd; }
+.today-rename-form input { min-width:0; width:100%; min-height:42px; padding:9px 11px; border:1px solid #aeb9d0; border-radius:8px; background:#fff; color:#202841; font-size:14px; }
+.today-rename-form input:focus { border-color:#4255ff; outline:2px solid #4255ff26; }
+.today-rename-form .button { min-height:42px; padding:8px 12px; gap:7px; }
+.today-rename-form .icon-button { width:42px; height:42px; }
+
 @media(max-width:720px) {
  .app .quizlet-header { grid-template-columns:minmax(0,1fr) 44px 44px; }
  .app .header-browse { display:block; grid-column:2; grid-row:1; }
@@ -350,4 +361,8 @@ body { background:var(--paper); color:var(--ink); font-size:14px; }
  .app .header-backup { display:flex; }
  .app .dashboard-grid { grid-template-columns:minmax(0,1fr); }
  .source-artwork { margin:22px 0 24px; border-radius:12px; }
+ .today-rename-form { grid-template-columns:minmax(0,1fr) 42px; }
+ .today-rename-form input { font-size:16px; }
+ .today-rename-form .button { grid-column:1 / -1; grid-row:2; }
+ .today-rename-form .icon-button { grid-column:2; grid-row:1; }
 }
