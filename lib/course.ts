@@ -69,6 +69,7 @@ export function plannedDay(start: string | undefined, index: number, pace: Cours
  return localDay(date);
 }
 export function paceLabel(pace:CoursePace|undefined){return pace==='twice-daily'?'2 a day':pace==='weekdays'?'Weekdays':'1 a day'}
+export function planDayNumber(index:number,pace:CoursePace|undefined){return pace==='twice-daily'?Math.floor(index/2)+1:index+1}
 export function courseDuration(count:number,pace:CoursePace|undefined){return pace==='twice-daily'?Math.ceil(count/2):count}
 export function removeCourse(courses: Course[], id: string, active: string) {
  const remaining=courses.filter(c=>c.id!==id);

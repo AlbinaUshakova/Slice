@@ -1,7 +1,7 @@
 'use client';
 import {useRef,useState} from 'react';
 import {GripVertical,Pencil,Trash2,Check,X,ChevronRight} from 'lucide-react';
-import {plannedDay,type Course} from '@/lib/course';
+import {plannedDay,planDayNumber,type Course} from '@/lib/course';
 const dateLabel=(value:string)=>new Intl.DateTimeFormat('en',{day:'numeric',month:'short'}).format(new Date(value+'T12:00:00'));
 export default function MaterialList({course,start,count,onPick,onRename,onDelete,onReorder}:{
  course:Course;start:number;count:number;onPick:(id:string)=>void;onRename:(id:string,title:string)=>void;onDelete:(id:string)=>void;onReorder:(id:string,target:string)=>void;
@@ -15,7 +15,7 @@ export default function MaterialList({course,start,count,onPick,onRename,onDelet
  return <div className="material-list" ref={list} role="list" aria-label="Collection items">
   <span className="sr-only" role="status">{message}</span>
   {course.lessons.slice(start,start+count).map((lesson,j)=>{
-   const i=start+j,date=plannedDay(course.planStart,i,course.pace),targeted=visual?.target===lesson.id&&visual.id!==lesson.id;
+   const i=start+j,day=planDayNumber(i,course.pace),date=plannedDay(course.planStart,i,course.pace),targeted=visual?.target===lesson.id&&visual.id!==lesson.id;
    const direction=visual&&course.lessons.findIndex(l=>l.id===visual.id)>i?'drop-before':'drop-after';
    return <div key={lesson.id} data-lesson-id={lesson.id} role="listitem" className={'material-row '+(visual?.id===lesson.id?'dragging ':'')+(targeted?direction:'')}>
     <button className="icon-button drag-handle" disabled={course.lessons.length<2||editing!==null} aria-label={`Move ${lesson.title}`} title="Drag or use ↑ ↓" onKeyDown={e=>{
@@ -29,13 +29,13 @@ export default function MaterialList({course,start,count,onPick,onRename,onDelet
      const target=row&&list.current?.contains(row)?row.dataset.lessonId!:lesson.id;
      drag.current.target=target;setVisual({id:lesson.id,target});
     }} onPointerUp={()=>end(true)} onPointerCancel={()=>end(false)} onLostPointerCapture={()=>end(false)}><GripVertical size={17}/></button>
-    <span className="material-day">Day {i+1}{date&&<small>{dateLabel(date)}</small>}</span>
+    <span className="material-day">Day {day}{date&&<small>{dateLabel(date)}</small>}</span>
     {editing===lesson.id?<form className="material-rename" onSubmit={e=>{e.preventDefault();save(lesson.id)}}>
      <input aria-label="Item name" value={name} onChange={e=>setName(e.target.value)} autoFocus onFocus={e=>e.currentTarget.select()} maxLength={200} onKeyDown={e=>{if(e.key==='Escape'){e.preventDefault();setEditing(null)}}}/>
      <button className="icon-button" disabled={!name.trim()} aria-label="Save name" title="Save"><Check size={17}/></button>
      <button className="icon-button" type="button" onClick={()=>setEditing(null)} aria-label="Cancel renaming" title="Cancel"><X size={17}/></button>
     </form>:<>
-     <button className="material-pick" onClick={()=>onPick(lesson.id)} aria-label={`Day ${i+1}: ${lesson.title}${lesson.completedAt?', completed':''}`}>
+     <button className="material-pick" onClick={()=>onPick(lesson.id)} aria-label={`Day ${day}: ${lesson.title}${lesson.completedAt?', completed':''}`}>
       <span className="history-copy"><b>{lesson.title}</b>{lesson.group&&<small>{lesson.group}</small>}{lesson.note&&<span className="note-preview">{lesson.note}</span>}</span>
       {lesson.completedAt?<Check className="history-check" size={17}/>:<ChevronRight size={17}/>}
      </button>

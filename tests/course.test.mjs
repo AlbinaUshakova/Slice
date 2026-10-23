@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {initialCourse,nextLesson,completeLesson,mergeCourse,validCourses,removeCourse,plannedDay} from '../lib/course.ts';
+import {initialCourse,nextLesson,completeLesson,mergeCourse,validCourses,removeCourse,plannedDay,planDayNumber,courseDuration} from '../lib/course.ts';
 import {courseUrl,parseCourse} from '../lib/importer.ts';
 const base=structuredClone(initialCourse);
 test('Completing, reopening and undoing a lesson preserve the ordered next lesson',()=>{
@@ -59,6 +59,11 @@ test('Pace changes the real calendar dates used by the plan',()=>{
  assert.equal(plannedDay('2026-10-24',0,'weekdays'),'2026-10-26');
  assert.ok(validCourses([{...base,pace:'weekdays'}]));
  assert.equal(validCourses([{...base,pace:'weekends'}]),false);
+});
+test('Two-a-day groups two consecutive lessons under the same plan day',()=>{
+ assert.deepEqual([0,1,2,3,4].map(index=>planDayNumber(index,'twice-daily')),[1,1,2,2,3]);
+ assert.deepEqual([0,1,2].map(index=>planDayNumber(index,'daily')),[1,2,3]);
+ assert.equal(courseDuration(37,'twice-daily'),19);
 });
 
 test('Collection reordering persists without changing IDs, notes or completion',async()=>{

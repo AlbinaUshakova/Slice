@@ -1,7 +1,7 @@
 'use client';
 import {useEffect,useState} from 'react';
 import {ArrowUpRight,ArrowRight,Check,BookOpen,Pencil,Plus,RotateCcw,X} from 'lucide-react';
-import type {Course} from '@/lib/course';
+import {courseDuration,type Course} from '@/lib/course';
 import {todayItems} from '@/lib/today';
 import SourceArtwork from './SourceArtwork';
 export default function TodayPlan({courses,onToggle,onLesson,onRename,onAdd,onHome,onOpened}:{courses:Course[];onToggle:(courseId:string,lessonId:string)=>void;onLesson:(courseId:string,lessonId:string)=>void;onRename:(courseId:string,lessonId:string,title:string)=>void;onAdd:()=>void;onHome:()=>void;onOpened?:(courseId:string,lessonId:string)=>void}){
@@ -17,7 +17,7 @@ export default function TodayPlan({courses,onToggle,onLesson,onRename,onAdd,onHo
  return <div className="today-home minimal-today">
   <div className="today-heading"><div><h1>Today</h1><span className="today-date">{new Intl.DateTimeFormat('en',{day:'numeric',month:'long',weekday:'long'}).format(now)}</span></div>{items.length>0&&<span className="today-count" role="status">{done} of {items.length}<small>lessons today</small></span>}</div>
   {pending.length?<div className="today-list">{pending.map(({course,lesson,done,day})=>{const isEditing=editing?.courseId===course.id&&editing.lessonId===lesson.id;return <article key={`${course.id}:${lesson.id}`} className="today-card">
-   <div className="today-card-top"><button className="today-course" onClick={()=>onLesson(course.id,lesson.id)}>{course.title}</button><div className="today-card-meta"><span>DAY {day} OF {course.lessons.length}</span><button className="icon-button today-rename-trigger" onClick={()=>startEditing(course.id,lesson.id,lesson.title)} aria-label={`Edit lesson title: ${lesson.title}`}><Pencil size={15}/></button></div></div>
+   <div className="today-card-top"><button className="today-course" onClick={()=>onLesson(course.id,lesson.id)}>{course.title}</button><div className="today-card-meta"><span>DAY {day} OF {courseDuration(course.lessons.length,course.pace)}</span><button className="icon-button today-rename-trigger" onClick={()=>startEditing(course.id,lesson.id,lesson.title)} aria-label={`Edit lesson title: ${lesson.title}`}><Pencil size={15}/></button></div></div>
    {isEditing?<form className="today-rename-form" onSubmit={event=>{event.preventDefault();saveTitle(course.id,lesson.id)}}><input aria-label={`Lesson title for ${course.title}`} value={title} onChange={event=>setTitle(event.target.value)} onKeyDown={event=>{if(event.key==='Escape'){event.preventDefault();cancelEditing()}}} onFocus={event=>event.currentTarget.select()} maxLength={200} autoFocus/><button className="button primary" disabled={!title.trim()}><Check size={15}/>Save</button><button type="button" className="icon-button" onClick={cancelEditing} aria-label="Cancel editing"><X size={17}/></button></form>:<h2>{lesson.title}</h2>}
    <SourceArtwork lessonUrl={lesson.url} sourceUrl={course.sourceUrl} source={course.source} compact/>
    <div className="today-actions"><a className="button primary" href={lesson.url} target="_blank" rel="noopener noreferrer" onClick={()=>onOpened?.(course.id,lesson.id)}>Open<ArrowUpRight size={16}/></a><button className="button secondary" onClick={()=>{setNow(new Date());onToggle(course.id,lesson.id)}} aria-label={`Done: ${lesson.title}`} aria-pressed={done}><Check size={17}/>Done</button><button className="today-notes" onClick={()=>onLesson(course.id,lesson.id)}>Note & audio<ArrowRight size={14}/></button></div>

@@ -1,4 +1,4 @@
-import {localDay,nextLesson,type Course,type Lesson} from './course.ts';
+import {localDay,planDayNumber,type Course,type Lesson} from './course.ts';
 export type TodayItem={course:Course;lesson:Lesson;done:boolean;day:number};
 export function todayItems(courses:Course[],now=new Date()):TodayItem[]{
  const today=localDay(now);
@@ -9,6 +9,6 @@ export function todayItems(courses:Course[],now=new Date()):TodayItem[]{
   const weekend=now.getDay()===0||now.getDay()===6;
   const available=course.pace==='weekdays'&&weekend?0:Math.max(0,capacity-completed.length);
   const queued=course.lessons.filter(l=>!l.completedAt).slice(0,available);
-  return [...completed,...queued].map(lesson=>({course,lesson,done:!!lesson.completedAt,day:course.lessons.findIndex(l=>l.id===lesson.id)+1}));
+  return [...completed,...queued].map(lesson=>({course,lesson,done:!!lesson.completedAt,day:planDayNumber(course.lessons.findIndex(l=>l.id===lesson.id),course.pace)}));
  });
 }
