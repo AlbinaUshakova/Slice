@@ -15,7 +15,7 @@ export default function MaterialList({course,start,count,onPick,onRename,onDelet
  return <div className="material-list" ref={list} role="list" aria-label="Collection items">
   <span className="sr-only" role="status">{message}</span>
   {course.lessons.slice(start,start+count).map((lesson,j)=>{
-   const i=start+j,date=plannedDay(course.planStart,i),targeted=visual?.target===lesson.id&&visual.id!==lesson.id;
+   const i=start+j,date=plannedDay(course.planStart,i,course.pace),targeted=visual?.target===lesson.id&&visual.id!==lesson.id;
    const direction=visual&&course.lessons.findIndex(l=>l.id===visual.id)>i?'drop-before':'drop-after';
    return <div key={lesson.id} data-lesson-id={lesson.id} role="listitem" className={'material-row '+(visual?.id===lesson.id?'dragging ':'')+(targeted?direction:'')}>
     <button className="icon-button drag-handle" disabled={course.lessons.length<2||editing!==null} aria-label={`Move ${lesson.title}`} title="Drag or use ↑ ↓" onKeyDown={e=>{

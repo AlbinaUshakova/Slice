@@ -4,9 +4,11 @@ export function todayItems(courses:Course[],now=new Date()):TodayItem[]{
  const today=localDay(now);
  return courses.flatMap(course=>{
   if(course.planStart&&course.planStart>today)return [];
-  // A completed item holds its place all day, including after a reload.
-  const completed=course.lessons.find(l=>l.completedAt&&localDay(new Date(l.completedAt))===today);
-  const lesson=completed??nextLesson(course);
-  return lesson?[{course,lesson,done:!!completed,day:course.lessons.findIndex(l=>l.id===lesson.id)+1}]:[];
+  const completed=course.lessons.filter(l=>l.completedAt&&localDay(new Date(l.completedAt))===today);
+  const capacity=course.pace==='twice-daily'?2:1;
+  const weekend=now.getDay()===0||now.getDay()===6;
+  const available=course.pace==='weekdays'&&weekend?0:Math.max(0,capacity-completed.length);
+  const queued=course.lessons.filter(l=>!l.completedAt).slice(0,available);
+  return [...completed,...queued].map(lesson=>({course,lesson,done:!!lesson.completedAt,day:course.lessons.findIndex(l=>l.id===lesson.id)+1}));
  });
 }

@@ -24,3 +24,12 @@ test('An item completed out of order today satisfies today without skipping earl
  const done=completeLesson(course,'two',now.toISOString());
  assert.equal(todayItems([done],now)[0].lesson.id,'two');assert.equal(todayItems([done],new Date(2026,9,14,12))[0].lesson.id,'one');
 });
+test('Two-a-day and weekdays pace control the number of lessons shown today',()=>{
+ const twice={...course,pace:'twice-daily',lessons:[lesson('one'),lesson('two'),lesson('three')]};
+ assert.deepEqual(todayItems([twice],now).map(item=>item.lesson.id),['one','two']);
+ const oneDone=completeLesson(twice,'one',now.toISOString());
+ assert.deepEqual(todayItems([oneDone],now).map(item=>[item.lesson.id,item.done]),[['one',true],['two',false]]);
+ const saturday=new Date(2026,9,17,12);
+ const weekdays={...course,pace:'weekdays'};
+ assert.equal(todayItems([weekdays],saturday).length,0);
+});

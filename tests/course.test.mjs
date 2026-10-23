@@ -14,9 +14,10 @@ test('Out-of-order completion never skips an unfinished earlier lesson',()=>{
  assert.equal(nextLesson(completeLesson(base,base.lessons[4].id,'2026-10-13T06:30:00Z')).id,base.lessons[0].id);
 });
 test('Reimport preserves completion and notes while respecting the reviewed order',()=>{
- const existing=completeLesson(base,base.lessons[0].id,'2026-10-13T06:30:00Z');existing.lessons[0].note='My own note';
+ const existing={...completeLesson(base,base.lessons[0].id,'2026-10-13T06:30:00Z'),pace:'weekdays'};existing.lessons[0].note='My own note';
  const result=mergeCourse(existing,{...base,lessons:[...base.lessons].reverse()});
  assert.equal(result.lessons[0].id,base.lessons[4].id);assert.equal(result.lessons[4].note,'My own note');assert.ok(result.lessons[4].completedAt);
+ assert.equal(result.pace,'weekdays');
  assert.ok(validCourses(JSON.parse(JSON.stringify([result]))));
 });
 test('Storage refuses corrupted data and executable URLs',()=>{
@@ -49,6 +50,15 @@ test('Daily plan spans months and leap years without losing days',()=>{
  assert.equal(plannedDay('2028-02-28',1),'2028-02-29');
  assert.equal(plannedDay('2028-02-28',2),'2028-03-01');
  assert.equal(plannedDay(undefined,2),null);
+});
+test('Pace changes the real calendar dates used by the plan',()=>{
+ assert.equal(plannedDay('2026-10-23',0,'twice-daily'),'2026-10-23');
+ assert.equal(plannedDay('2026-10-23',1,'twice-daily'),'2026-10-23');
+ assert.equal(plannedDay('2026-10-23',2,'twice-daily'),'2026-10-24');
+ assert.equal(plannedDay('2026-10-23',1,'weekdays'),'2026-10-26');
+ assert.equal(plannedDay('2026-10-24',0,'weekdays'),'2026-10-26');
+ assert.ok(validCourses([{...base,pace:'weekdays'}]));
+ assert.equal(validCourses([{...base,pace:'weekends'}]),false);
 });
 
 test('Collection reordering persists without changing IDs, notes or completion',async()=>{

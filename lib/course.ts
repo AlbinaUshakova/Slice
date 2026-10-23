@@ -1,5 +1,6 @@
 export type Lesson = { id: string; title: string; url: string; completedAt: string | null; note: string; group?: string };
-export type Course = { id: string; title: string; source: string; sourceUrl: string; lessons: Lesson[]; planStart?: string; importNotice?: string };
+export type CoursePace = 'daily' | 'twice-daily' | 'weekdays';
+export type Course = { id: string; title: string; source: string; sourceUrl: string; lessons: Lesson[]; planStart?: string; pace?: CoursePace; importNotice?: string };
 export const COURSE_URL = 'https://learnenglish.britishcouncil.org/free-resources/speaking/a2';
 export const STORAGE_KEY = 'english-morning:v1';
 export const initialCourse: Course = {
@@ -26,7 +27,7 @@ export function mergeCourse(existing: Course | undefined, incoming: Course): Cou
   const byUrl = new Map(existing?.lessons.map(l => [l.url,l]) ?? []);
   const counts=(lessons:Lesson[])=>{const result=new Map<string,number>();for(const l of lessons)result.set(l.url,(result.get(l.url)??0)+1);return result};
   const oldCounts=counts(existing?.lessons??[]),newCounts=counts(incoming.lessons);
-  return {...incoming, planStart:incoming.planStart ?? existing?.planStart, lessons:incoming.lessons.map(l => {
+  return {...incoming, planStart:incoming.planStart ?? existing?.planStart, pace:incoming.pace ?? existing?.pace, lessons:incoming.lessons.map(l => {
     const old=byId.get(l.id)??(oldCounts.get(l.url)===1&&newCounts.get(l.url)===1?byUrl.get(l.url):undefined);
     return {...l,completedAt:old?.completedAt??null,note:old?.note??''};
   })};
@@ -39,6 +40,7 @@ export function validCourses(value: unknown): value is Course[] {
   if(!c||typeof c!=='object'||typeof c.id!=='string'||!c.id||ids.has(c.id)||typeof c.title!=='string'||typeof c.source!=='string'||typeof c.sourceUrl!=='string'||!safeUrl(c.sourceUrl))return false;
   ids.add(c.id);
   if(c.planStart!==undefined&&(typeof c.planStart!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(c.planStart)||localDay(new Date(c.planStart+'T12:00:00'))!==c.planStart))return false;
+  if(c.pace!==undefined&&!['daily','twice-daily','weekdays'].includes(c.pace))return false;
   if(c.importNotice!==undefined&&typeof c.importNotice!=='string')return false;
   if(!Array.isArray(c.lessons)||c.lessons.length>2000)return false;
   const lessons=new Set<string>();
@@ -56,11 +58,18 @@ export const ACTIVE_KEY = 'english-morning:active-course';
 export function localDay(date=new Date()): string {
  return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
 }
-export function plannedDay(start: string | undefined, index: number): string | null {
+export function plannedDay(start: string | undefined, index: number, pace: CoursePace='daily'): string | null {
  if (!start || !/^\d{4}-\d{2}-\d{2}$/.test(start)) return null;
  const date=new Date(start+'T12:00:00'); if(!Number.isFinite(date.getTime()))return null;
- date.setDate(date.getDate()+index); return localDay(date);
+ const offset=pace==='twice-daily'?Math.floor(index/2):index;
+ if(pace!=='weekdays'){date.setDate(date.getDate()+offset);return localDay(date)}
+ let remaining=offset;
+ while(remaining>0){date.setDate(date.getDate()+1);if(date.getDay()!==0&&date.getDay()!==6)remaining--}
+ while(date.getDay()===0||date.getDay()===6)date.setDate(date.getDate()+1);
+ return localDay(date);
 }
+export function paceLabel(pace:CoursePace|undefined){return pace==='twice-daily'?'2 a day':pace==='weekdays'?'Weekdays':'1 a day'}
+export function courseDuration(count:number,pace:CoursePace|undefined){return pace==='twice-daily'?Math.ceil(count/2):count}
 export function removeCourse(courses: Course[], id: string, active: string) {
  const remaining=courses.filter(c=>c.id!==id);
  return {courses:remaining,active:remaining.some(c=>c.id===active)?active:remaining[0]?.id??''};

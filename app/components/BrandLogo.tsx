@@ -3,6 +3,6 @@ import {BRAND_NAME} from '@/lib/brand';
 export default function BrandLogo({tone='auto'}:{tone?:'light'|'dark'|'auto'}) {
  return <span className="brand-lockup" data-tone={tone}>
   <img className="brand-symbol" src="/brand/step-flag.svg" alt="" width="44" height="30"/>
-  <span>{BRAND_NAME.toUpperCase()}</span>
+  <span>{BRAND_NAME}</span>
  </span>;
 }
