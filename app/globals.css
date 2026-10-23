@@ -295,7 +295,7 @@ body { background:var(--paper); color:var(--ink); font-size:14px; }
  .app .quizlet-header .header-brand { font-size:18px; }
  .app .quizlet-header .brand-symbol { width:37px; height:27px; }
  .header-search { min-height:44px; border-radius:11px; }
- .app .main-wrap { padding-top:calc(118px + env(safe-area-inset-top)); }
+ .app .main-wrap { margin-left:0; padding-top:calc(118px + env(safe-area-inset-top)); }
  .app main { padding:28px 18px calc(94px + env(safe-area-inset-bottom)); }
  .app .library-heading h1,.app .today-heading h1,.app .page-heading h1 { font-size:28px; }
  .app .page-heading { padding-bottom:22px; }
