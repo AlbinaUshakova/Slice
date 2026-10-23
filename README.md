@@ -4,13 +4,15 @@ Personal reading and learning plans: one source material per day, with completio
 
 ## Import and daily plans
 
-`POST /api/import` supports British Council course/section URLs and public YouTube playlists. A level URL (e.g. `/free-resources/speaking/b1`) returns actual lessons. A section URL (`/free-resources/speaking`) recursively opens its level pages and flattens their lessons in source order, retaining A1/A2/B1/B2 group labels. It never presents level index pages as daily lessons.
+`POST /api/import` supports British Council course/section URLs, public YouTube playlists and the registered Spotify podcast source. A level URL (e.g. `/free-resources/speaking/b1`) returns actual lessons. A section URL (`/free-resources/speaking`) recursively opens its level pages and flattens their lessons in source order, retaining A1/A2/B1/B2 group labels. It never presents level index pages as daily lessons.
 
 The review dialog supports level selection, title edits, reordering, removing rows and a starting date. Each retained material receives a numbered day and calendar date. Materials are accessible ahead of the plan; missed days do not skip unfinished material.
 
 Production investigation on 2026-10-13 reproduced a 400 response from the deployed import API: British Council did not return a successful HTML response to the server's fetch. To keep known Speaking imports usable, `lib/data/speaking-catalog.json` contains independently fetched and verified title/link snapshots from all four level pages on 2026-10-13 (5 lessons each). Live fetch is tried first; if it fails, only a matching known page uses the dated catalog. The review screen explicitly displays the fallback notice. It is not represented as a live fetch. Unknown blocked URLs still report an error.
 
 Only source titles, links and group labels are stored; source exercises are not copied. YouTube import reads public playlist metadata, follows continuation pages, preserves source order, omits duplicates and unavailable items with a notice, and rejects incomplete responses. Up to 2,000 videos are supported. The two user-supplied playlists were independently fetched on 2026-10-13: 49 Turkish lessons and 1,033 English videos across 11 pages. Their dated title/link catalogs provide a clearly labeled fallback when YouTube refuses server requests. Other sources can be added as manual title/link lists. There is no AI API, unrestricted scraper, login-wall bypass, general scraping or JavaScript-rendering service.
+
+Spotify show pages expose only a small initial group of episodes, so the registered English Galaxy show (`4HQAd7Pw4J1I3gPBCANURe`) is imported from its publisher's official public RSS feed instead. This returns all 300 available episodes in feed order and links each lesson to the publisher's episode page. Unregistered Spotify shows fail with an explicit RSS-support message instead of silently saving a partial list. No Spotify password, token or private feed is used.
 
 ## Progress and deletion
 

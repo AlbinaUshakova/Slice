@@ -1,6 +1,7 @@
 import type { Course, Lesson } from './course';
 import {isYoutube,fetchYoutube} from './youtube.ts';
 import {isVergavi,fetchVergavi} from './vergavi.ts';
+import {isSpotify,fetchSpotify} from './podcast.ts';
 import {fetchWebCourse,singlePage} from './web-import.ts';
 import {publicUrl} from './public-page.ts';
 import catalog from './data/speaking-catalog.json' with { type: 'json' };
@@ -84,6 +85,7 @@ export async function fetchCourse(value: string, options: ImportOptions = {}): P
   return url.searchParams.has('list')?fetchYoutube(value,fetcher):singlePage(url,'YouTube','Одна ссылка — один день. Название можно изменить.');
  }
  if(isVergavi(value))return fetchVergavi(value,fetcher);
+ if(isSpotify(value))return fetchSpotify(value,fetcher);
  let host:string;try{host=new URL(value).hostname}catch{return fetchWebCourse(value,fetcher)}
  if(host!=='learnenglish.britishcouncil.org')return fetchWebCourse(value,fetcher);
  const root=await fetchIndex(value,fetcher);
