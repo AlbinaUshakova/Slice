@@ -15,7 +15,7 @@ import {deleteCourseRecordings,deleteLessonRecordings} from '@/lib/recordings';
 import {planCourseId} from '@/lib/navigation';
 import {parseLinkInput} from '@/lib/link-input';
 import {appendCourse,newLessons} from '@/lib/append-course';
-import {ArrowUpRight,ArrowRight,ArrowUp,ArrowDown,Check,Plus,X,BookOpen,RotateCcw,Download,List,House,Link2,ChevronDown,Flag,AlertCircle} from 'lucide-react';
+import {ArrowUpRight,ArrowRight,ArrowUp,ArrowDown,Check,Plus,X,BookOpen,RotateCcw,Download,List,House,Link2,ChevronDown,Flag,AlertCircle,Pencil} from 'lucide-react';
 import {Course,CoursePace,Lesson,STORAGE_KEY,ACTIVE_KEY,nextLesson,completeLesson,mergeCourse,validCourses,localDay,plannedDay,planDayNumber,removeCourse,reorderCourses,paceLabel,courseDuration} from '@/lib/course';
 
 const pad=(n:number)=>String(n).padStart(2,'0');
@@ -129,6 +129,8 @@ export default function Planner({startView='today'}:{startView?:'home'|'today'})
  const [importTarget,setImportTarget]=useState<string|null>(null);
  const [opened,setOpened]=useState<{courseId:string;lessonId:string;at:number}|null>(null);
  const [undo,setUndo]=useState<{courseId:string;lessonId:string;previous:string|null}|null>(null);
+ const [editingLessonTitle,setEditingLessonTitle]=useState<string|null>(null);
+ const [lessonTitle,setLessonTitle]=useState('');
  useEffect(()=>{
   try {
    const saved=localStorage.getItem(STORAGE_KEY);
@@ -153,6 +155,7 @@ export default function Planner({startView='today'}:{startView?:'home'|'today'})
  const done=course.lessons.filter(l=>l.completedAt).length;
  const finished=done===course.lessons.length;
  const planned=plannedDay(course.planStart,index,course.pace);
+ const lessonKey=`${course.id}:${lesson.id}`;
  function update(updated:Course){setCourses(prev=>prev.map(c=>c.id===updated.id?updated:c))}
  function renameCollection(id:string,title:string){setCourses(prev=>prev.map(c=>c.id===id?{...c,title}:c))}
  function renameTodayLesson(courseId:string,lessonId:string,title:string){setCourses(prev=>prev.map(c=>c.id===courseId?renameMaterial(c,lessonId,title):c));setNotice('Name saved.')}
@@ -164,6 +167,10 @@ export default function Planner({startView='today'}:{startView?:'home'|'today'})
   const result=removeCourse(courses,id,active);setCourses(result.courses);setActive(result.active);setSelected(null);setUndo(null);setNotice('Collection deleted.');
  }
  function renameLesson(id:string,title:string){setCourses(prev=>prev.map(c=>c.id===course.id?renameMaterial(c,id,title):c));}
+ function saveLessonTitle(event:React.FormEvent){
+  event.preventDefault();const next=lessonTitle.trim().slice(0,200);if(!next)return;
+  renameLesson(lesson.id,next);setEditingLessonTitle(null);setLessonTitle('');setNotice('Name saved.');
+ }
  function moveLesson(id:string,target:string){
   const position=course.lessons.findIndex(l=>l.id===target);
   setCourses(prev=>prev.map(c=>c.id===course.id?reorderMaterials(c,id,target):c));
@@ -222,7 +229,7 @@ export default function Planner({startView='today'}:{startView?:'home'|'today'})
     {!ready?<p className="loading-state">Loading…</p>:view==='daily'?<TodayPlan courses={courses} onToggle={toggleMaterial} onOpened={(courseId,lessonId)=>setOpened({courseId,lessonId,at:Date.now()})} onLesson={(courseId,lessonId)=>{setActive(courseId);setSelected(lessonId);setView('today');setPlanPage(0)}} onRename={renameTodayLesson} onAdd={()=>{setImportTarget(null);setShowImport(true)}} onHome={()=>setView('home')}/>:view==='home'?<CourseDashboard query={query} onQuery={setQuery} courses={courses} active={course.id} onPick={switchCourse} onAdd={()=>{setImportTarget(null);setShowImport(true)}} onDelete={deleteCollection} onRename={renameCollection} onReorder={(id,target)=>setCourses(prev=>reorderCourses(prev,id,target))}/>:!courses.length?<section className="first-run-card today-empty"><BookOpen size={28}/><h2>Start with one link</h2><button className="button primary" onClick={()=>setShowImport(true)}>Add a link<Plus size={16}/></button></section>:!course.lessons.length?<section className="first-run-card today-empty"><BookOpen size={28}/><h2>Nothing here yet</h2><button className="button primary" onClick={()=>{setImportTarget(course.id);setShowImport(true)}}><Plus size={16}/>Add links</button></section>:view==='today'?<div className="lesson-page">
      <button className="lesson-back" onClick={()=>setView('history')}>← {course.title}</button>
      {finished&&!selected?<section className="collection-complete"><Check size={30}/><h1>Collection complete!</h1><p>{course.title} · {done} of {course.lessons.length} lessons</p><div className="complete-stats"><span><b>{done}</b>lessons completed</span><span><b>{courseDuration(course.lessons.length,course.pace)}</b>days in the plan</span></div><div className="button-row"><button className="button primary" onClick={()=>setShowImport(true)}>Add a new collection</button><button className="button secondary" onClick={()=>setView('history')}>Open plan</button></div></section>:<>
-      <section className="lesson-card"><div className="material-top"><span className="day-label">DAY {planDayNumber(index,course.pace)} OF {courseDuration(course.lessons.length,course.pace)}</span><span className="material-date">{lesson.group&&<b>{lesson.group}</b>}{planned?dateLabel(planned):paceLabel(course.pace)}</span></div><h1>{lesson.title}</h1><SourceArtwork lessonUrl={lesson.url} sourceUrl={course.sourceUrl} source={course.source}/><div className="material-actions"><a className="button primary" href={lesson.url} target="_blank" rel="noopener noreferrer" onClick={()=>setOpened({courseId:course.id,lessonId:lesson.id,at:Date.now()})}>Open lesson<ArrowUpRight size={17}/></a><button className={'button secondary '+(lesson.completedAt?'is-done':'')} onClick={toggleDone}>{lesson.completedAt?<RotateCcw size={15}/>:<Check size={17}/>}<span>{lesson.completedAt?'Mark as not done':'Done'}</span></button></div></section>
+      <section className="lesson-card"><div className="material-top"><span className="day-label">DAY {planDayNumber(index,course.pace)} OF {courseDuration(course.lessons.length,course.pace)}</span><span className="material-date">{lesson.group&&<b>{lesson.group}</b>}{planned?dateLabel(planned):paceLabel(course.pace)}</span></div>{editingLessonTitle===lessonKey?<form className="lesson-title-form" onSubmit={saveLessonTitle}><input aria-label="Lesson title" value={lessonTitle} onChange={event=>setLessonTitle(event.target.value)} onKeyDown={event=>{if(event.key==='Escape'){event.preventDefault();setEditingLessonTitle(null)}}} onFocus={event=>event.currentTarget.select()} maxLength={200} autoFocus/><button className="button primary" disabled={!lessonTitle.trim()}><Check size={16}/>Save</button><button type="button" className="icon-button" onClick={()=>setEditingLessonTitle(null)} aria-label="Cancel editing"><X size={18}/></button></form>:<div className="lesson-title-row"><h1>{lesson.title}</h1><button className="icon-button lesson-title-edit" onClick={()=>{setLessonTitle(lesson.title);setEditingLessonTitle(lessonKey)}} aria-label="Edit lesson title"><Pencil size={18}/></button></div>}<SourceArtwork lessonUrl={lesson.url} sourceUrl={course.sourceUrl} source={course.source}/><div className="material-actions"><a className="button primary" href={lesson.url} target="_blank" rel="noopener noreferrer" onClick={()=>setOpened({courseId:course.id,lessonId:lesson.id,at:Date.now()})}>Open lesson<ArrowUpRight size={17}/></a><button className={'button secondary '+(lesson.completedAt?'is-done':'')} onClick={toggleDone}>{lesson.completedAt?<RotateCcw size={15}/>:<Check size={17}/>}<span>{lesson.completedAt?'Mark as not done':'Done'}</span></button></div></section>
       <details className="note-card" key={lesson.id} open><summary className="voice-summary"><span>Note</span>{lesson.note&&<span className="voice-status">Saved</span>}</summary><div className="note-body"><label className="sr-only" htmlFor="material-note">Note for this lesson</label><textarea id="material-note" key={lesson.id} value={lesson.note} onChange={e=>update({...course,lessons:course.lessons.map(l=>l.id===lesson.id?{...l,note:e.target.value}:l)})} placeholder="What would you like to remember?" rows={4} maxLength={10000}/></div></details>
       <VoiceNote key={JSON.stringify([course.id,lesson.id])} courseId={course.id} lessonId={lesson.id}/><div className="lesson-pagination"><button disabled={index<=0} onClick={()=>index>0&&goLesson(course.lessons[index-1].id)}>{index>0?`← Day ${planDayNumber(index-1,course.pace)}`:'Previous'}</button><button disabled={index>=course.lessons.length-1} onClick={()=>index<course.lessons.length-1&&goLesson(course.lessons[index+1].id)}>{index<course.lessons.length-1?`Day ${planDayNumber(index+1,course.pace)} →`:'Next'}</button></div>
      </>}

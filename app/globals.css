@@ -433,3 +433,6 @@ body { background:var(--paper); color:var(--ink); font-size:14px; }
 .app .minimal-today .source-artwork{max-height:none}
 .app .source-artwork-video{background:#000}
 .app .source-artwork-video img{object-fit:contain;object-position:center}
+
+.lesson-title-row{display:flex;align-items:flex-start;gap:10px;margin-top:20px}.lesson-title-row h1{flex:1;margin:0}.lesson-title-edit{flex:0 0 42px;width:42px;height:42px;margin-top:-4px;color:#64748b}.lesson-title-edit:hover{background:var(--soft);color:var(--accent-dark)}.lesson-title-form{display:grid;grid-template-columns:minmax(0,1fr) auto 42px;align-items:center;gap:8px;margin-top:20px}.lesson-title-form input{min-width:0;width:100%;min-height:52px;padding:8px 12px;border:1px solid var(--accent);border-radius:8px;background:#fff;color:var(--ink);font:inherit;font-size:28px;font-weight:900;line-height:1.2}.lesson-title-form input:focus{outline:3px solid #1865f226}.lesson-title-form .button{min-height:52px}.lesson-title-form .icon-button{width:42px;height:42px}
+@media(max-width:720px){.lesson-title-row{gap:6px}.lesson-title-edit{margin-top:-7px}.lesson-title-form{grid-template-columns:minmax(0,1fr) 42px}.lesson-title-form input{grid-column:1/-1;font-size:24px}.lesson-title-form .button{width:100%}.lesson-title-form .icon-button{grid-column:2;grid-row:2}}
