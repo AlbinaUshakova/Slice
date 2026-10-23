@@ -24,7 +24,7 @@ export function isPublicAddress(value:string):boolean {
   return /^[23][\da-f]{3}:/.test(ip)&&!/^200[12]:/.test(ip)&&!/^3fff:/.test(ip);
  }catch{return false}
 }
-async function assertPublicDns(url:URL,fetcher:typeof fetch,signal:AbortSignal){
+export async function assertPublicDns(url:URL,fetcher:typeof fetch,signal:AbortSignal){
  const responses=await Promise.all(['A','AAAA'].map(async type=>{
   const dns=new URL('https://cloudflare-dns.com/dns-query');dns.searchParams.set('name',url.hostname);dns.searchParams.set('type',type);
   const response=await fetcher(dns,{signal,redirect:'manual',headers:{Accept:'application/dns-json'}});

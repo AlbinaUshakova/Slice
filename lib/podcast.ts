@@ -1,4 +1,5 @@
-import type {Course,Lesson} from './course';
+import type {Course} from './course';
+import {parseFeed} from './feed.ts';
 
 const SPOTIFY_HOST='open.spotify.com';
 const SPOTIFY_FEEDS:Record<string,string>={
@@ -18,35 +19,9 @@ export function spotifyShowUrl(value:string):URL {
  return new URL(`https://${SPOTIFY_HOST}/show/${match[1]}`);
 }
 
-function decodeXml(value:string):string {
- return value.replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g,'$1').replace(/<[^>]*>/g,'')
-  .replace(/&#(x[\da-f]+|\d+);/gi,(_,n:string)=>{const cp=n[0].toLowerCase()==='x'?parseInt(n.slice(1),16):parseInt(n,10);return cp>0&&cp<=0x10ffff?String.fromCodePoint(cp):''})
-  .replace(/&(amp|quot|apos|lt|gt|nbsp);/gi,(_,n:string)=>({amp:'&',quot:'"',apos:"'",lt:'<',gt:'>',nbsp:' '}[n.toLowerCase() as 'amp'|'quot'|'apos'|'lt'|'gt'|'nbsp']))
-  .replace(/\s+/g,' ').trim();
-}
-
-function tag(xml:string,name:string):string {
- return decodeXml(new RegExp(`<${name}(?:\\s[^>]*)?>([\\s\\S]*?)<\\/${name}>`,'i').exec(xml)?.[1]??'');
-}
-
 export function parsePodcastFeed(xml:string,source:URL):Course {
- const channel=xml.slice(0,xml.search(/<item\b/i)>=0?xml.search(/<item\b/i):xml.length);
- const title=tag(channel,'title');
- const lessons:Lesson[]=[];const seen=new Set<string>();
- for(const match of xml.matchAll(/<item\b[^>]*>([\s\S]*?)<\/item>/gi)){
-  const item=match[1];const lessonTitle=tag(item,'title');
-  const rawLink=tag(item,'link')||decodeXml(/<enclosure\b[^>]*\burl\s*=\s*["']([^"']+)["']/i.exec(item)?.[1]??'');
-  let link:URL;try{link=new URL(rawLink)}catch{continue}
-  if(!/^https?:$/.test(link.protocol)||link.username||link.password||!lessonTitle)continue;
-  link.hash='';const url=link.href;if(seen.has(url))continue;seen.add(url);
-  lessons.push({id:url,url,title:lessonTitle.slice(0,200),completedAt:null,note:''});
-  if(lessons.length>=2000)break;
- }
- if(!title||!lessons.length)throw new Error('В RSS-ленте не найдены выпуски подкаста.');
- return {
-  id:source.href,title:title.slice(0,120),source:'Spotify · RSS',sourceUrl:source.href,lessons,
-  importNotice:`Загружено из официальной открытой RSS-ленты: ${lessons.length} выпусков. Ссылки открывают страницы выпусков автора.`,
- };
+ const course=parseFeed(xml,source,{sourceName:'Spotify · RSS'});
+ return {...course,importNotice:`Загружено из официальной открытой RSS-ленты: ${course.lessons.length} выпусков. Ссылки открывают страницы выпусков автора.`};
 }
 
 function knownFeed(source:URL):URL {

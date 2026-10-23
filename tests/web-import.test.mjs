@@ -70,6 +70,11 @@ test('Telegram web/pinned links and single YouTube videos do not fetch private c
   assert.equal(c.lessons.length,1);assert.equal(c.lessons[0].url,url);assert.ok(c.importNotice);
  }
 });
+test('Known dynamic collections fail clearly instead of pretending the first page is complete',async()=>{
+ for(const url of ['https://www.youtube.com/@english/videos','https://www.coursera.org/learn/english','https://podcasts.apple.com/us/podcast/show/id123456789','https://drive.google.com/drive/folders/abc']){
+  await assert.rejects(()=>fetchCourse(url,{fetcher:()=>{throw new Error('Must not request')}}),/плейлист|динамически|RSS|Google Drive/);
+ }
+});
 test('Append keeps course identity, start date, progress and notes; repeats are skipped and dates continue',()=>{
  const original={...parseWebPage('<h1>Reading</h1><h2><a href="/story/one">First article</a></h2>',source),planStart:'2026-10-13'};
  original.lessons[0].completedAt='2026-10-13T07:00:00Z';original.lessons[0].note='Keep this';

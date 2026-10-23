@@ -70,8 +70,8 @@ function ImportDialog({onClose,onSave,target,existingIds}:{onClose:()=>void;onSa
    <form onSubmit={e=>{e.preventDefault();void find()}}>
     <label htmlFor="material-links">Ссылки</label>
     <textarea id="material-links" className="link-input" rows={4} value={input} disabled={busy} onChange={e=>setInput(e.target.value)} placeholder={'https://…'} required maxLength={420000} autoCapitalize="none" autoCorrect="off" spellCheck={false} aria-describedby="links-hint"/>
-    <p id="links-hint" className="field-hint">Курс, плейлист или статьи. Несколько ссылок — с новой строки.</p>
-    <details className="import-help"><summary>Примеры и подсказки</summary><p>Из Telegram: скопируй ссылки из закрепа. Закрытые сообщения не читаются.</p><p>Своё название: Название | https://…</p>
+    <p id="links-hint" className="field-hint">Курс Stepik, плейлист YouTube, RSS/Atom или статьи. Несколько ссылок — с новой строки.</p>
+    <details className="import-help"><summary>Примеры и подсказки</summary><p>Для подкаста можно вставить прямую RSS/Atom-ссылку. Из Telegram скопируй ссылки из закрепа: закрытые сообщения не читаются.</p><p>Своё название: Название | https://…</p>
     <div className="example-links"><span>Попробовать:</span><button disabled={busy} type="button" onClick={()=>setInput('https://naked-science.ru/tags/kosmos')}>Космос</button><button disabled={busy} type="button" onClick={()=>setInput('https://aferin.me/program')}>Турецкий</button><button disabled={busy} type="button" onClick={()=>setInput('https://www.youtube.com/playlist?list=PLssRXZAfmWU510niYlySaZnOLHwj2jTUP')}>YouTube</button></div></details>
     {error&&<p className="error" role="alert">{error}</p>}
     <button className="button primary wide" disabled={busy}>{busy?'Ищем материалы…':target?'Продолжить':'Составить план'}{!busy&&<ArrowRight size={16}/>}</button>

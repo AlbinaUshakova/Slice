@@ -2,6 +2,8 @@ import type { Course, Lesson } from './course';
 import {isYoutube,fetchYoutube} from './youtube.ts';
 import {isVergavi,fetchVergavi} from './vergavi.ts';
 import {isSpotify,fetchSpotify} from './podcast.ts';
+import {isStepik,fetchStepik} from './stepik.ts';
+import {isFeedUrl,fetchFeed} from './feed.ts';
 import {fetchWebCourse,singlePage} from './web-import.ts';
 import {publicUrl} from './public-page.ts';
 import catalog from './data/speaking-catalog.json' with { type: 'json' };
@@ -35,6 +37,20 @@ export function parseCourse(html: string, source: URL): Course {
 type ImportOptions = { fetcher?: typeof fetch };
 const LEVEL_PATH = /\/(?:free-resources|skills)\/(?:speaking|reading|listening|writing)\/(?:a1|a2|b1|b2|c1|c2)(?:-[a-z0-9-]+)?$/;
 const SPEAKING_ROOT = 'https://learnenglish.britishcouncil.org/free-resources/speaking';
+function isYoutubeVideo(url:URL):boolean {
+ if(url.hostname==='youtu.be')return /^\/[-\w]{11}\/?$/.test(url.pathname);
+ return url.pathname==='/watch'&&/^[-\w]{11}$/.test(url.searchParams.get('v')??'')||/^\/(?:shorts|live|embed)\/[-\w]{11}\/?$/.test(url.pathname);
+}
+function incompletePlatform(url:URL):string|undefined {
+ const host=url.hostname.replace(/^www\./,'');
+ if(host==='podcasts.apple.com'||host==='music.yandex.ru'||host==='castbox.fm'||host==='pocketcasts.com')return 'Страница каталога подкастов показывает не всю историю. Вставь прямую RSS/Atom-ссылку издателя.';
+ if(host==='soundcloud.com'&&/\/sets\//.test(url.pathname))return 'Плейлисты SoundCloud постраничные и требуют отдельного API. Пока вставь ссылки на материалы списком.';
+ if(host==='drive.google.com'&&url.pathname.startsWith('/drive/folders/'))return 'Папка Google Drive требует отдельного доступа и пагинации. Пока вставь публичные ссылки на файлы списком.';
+ if((host==='vimeo.com'&&url.pathname.startsWith('/showcase/'))||host==='loom.com'&&url.pathname.startsWith('/share/folder/'))return 'Эта видеоподборка загружается постранично. Пока вставь ссылки на видео списком.';
+ if(host==='coursera.org'&&/^\/learn\/[^/]+\/?$/.test(url.pathname)||host==='udemy.com'&&url.pathname.startsWith('/course/')||host==='edx.org'&&url.pathname.startsWith('/learn/')||host.endsWith('.skillshare.com')||host==='skillshare.com'&&url.pathname.startsWith('/classes/'))
+  return 'Платформа показывает программу динамически и может требовать вход. Чтобы не сохранить неполный курс, вставь ссылки на уроки списком.';
+ if((host==='instagram.com'||host==='tiktok.com'||host==='pinterest.com')&&url.pathname.split('/').filter(Boolean).length<=2)return 'Профиль с бесконечной прокруткой нельзя надёжно считать полным курсом. Вставь выбранные публикации списком.';
+}
 function catalogCopy(url: URL): Course | null {
  const canonical=url.href.replace('/skills/','/free-resources/');
  const item=catalog.courses.find(c=>c.sourceUrl===canonical);
@@ -82,11 +98,17 @@ export async function fetchCourse(value: string, options: ImportOptions = {}): P
  const fetcher=options.fetcher ?? fetch;
  if(isYoutube(value)){
   const url=publicUrl(value);
-  return url.searchParams.has('list')?fetchYoutube(value,fetcher):singlePage(url,'YouTube','Одна ссылка — один день. Название можно изменить.');
+  if(url.searchParams.has('list'))return fetchYoutube(value,fetcher);
+  if(isYoutubeVideo(url))return singlePage(url,'YouTube','Одна ссылка — один день. Название можно изменить.');
+  throw new Error('Ссылка на канал YouTube не подтверждает полный список видео. Выбери плейлист канала или вставь ссылки списком.');
  }
  if(isVergavi(value))return fetchVergavi(value,fetcher);
  if(isSpotify(value))return fetchSpotify(value,fetcher);
- let host:string;try{host=new URL(value).hostname}catch{return fetchWebCourse(value,fetcher)}
+ if(isStepik(value))return fetchStepik(value,fetcher);
+ if(isFeedUrl(value))return fetchFeed(value,fetcher);
+ let url:URL;try{url=new URL(value)}catch{return fetchWebCourse(value,fetcher)}
+ const risk=incompletePlatform(url);if(risk)throw new Error(risk);
+ const host=url.hostname;
  if(host!=='learnenglish.britishcouncil.org')return fetchWebCourse(value,fetcher);
  const root=await fetchIndex(value,fetcher);
  if(!root.lessons.length || !root.lessons.every(l=>LEVEL_PATH.test(new URL(l.url).pathname)))return root;

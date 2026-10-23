@@ -78,7 +78,7 @@ export function parseWebPage(html:string,source:URL):Course{
  if(!lessons.length)return base;
  const shared=lessons.some(l=>l.url===source.href);
  const notice=shared?'План по темам открытой программы. У тем нет отдельных ссылок: открывается общая страница.':
-  'Материалы с этой страницы — по одному в день. Проверь список; следующие страницы и новые публикации автоматически не добавляются.';
+  `Найдено на первой открытой странице: ${lessons.length}. Полнота списка не подтверждена; следующие страницы и новые публикации автоматически не добавляются.`;
  return {...base,lessons:lessons.slice(0,200),importNotice:notice+(lessons.length>200?' Показаны первые 200 материалов.':'')};
 }
 export async function fetchWebCourse(value:string,fetcher:typeof fetch=fetch):Promise<Course>{
